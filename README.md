@@ -31,12 +31,57 @@
 	 step 2:make
 	 step 3:include FM.h
 	 step 4: g++ your_program.cpp -o xx -fm.a
+###interface
+	 a snapshot of public part of FM.h is helpfull
+	 ```cpp
+	 class FM
+	{
+		public:
+				FM(const char * filename,int block_size = 256,int D=32,int shape=1);
+				FM();
+				~FM();
+				void Counting(const char *pattern,int &num);
+				void Locating(const char *pattern,int & num,int *&pos);
+				void Extracting(int pos,int len,char *sequence);
+				int Load(const char * indexfile);
+				int Save(const char * indexfile);
+				int GetN();
+				int SizeInByte();
+				int SizeInByte_count();
+		private:
+				...
+	}
+	```
+
+
 ###example
-```cpp
-#include"fm.h"
-#include<iostream>
-using namespace std;
-int main()
-{
-	return 0;
-}
+	```cpp
+	#include"fm.h"
+	#include<iostream>
+	using namespace std;
+	int main()
+	{
+		FM fm("filename");
+		int num;
+		fm.Counting("the",num);
+		cout<<"pattern the occs "<<num<<" times"<<endl;
+		int *pos;
+		fm.Locating("love",num.pos);
+		cout<<"pattern love occs "<<num<<" times"<<endl;
+		cout<<"all the positions are:";
+		for(int i=0;i<num;i++)
+			cout<<pos[i]<<endl;
+		delete [] pos;//it's your duty to delete pos.
+		pos=NULL;
+
+		char * sequence;
+		int start=0;
+		int len =20;
+		fm.Extracting(start,len,sequence);
+		cout<<"T[start...start+len-1] is "<<sequence<<endl;
+		delete [] sequence;//it's your duty to delete sequence.
+    	sequence =NULL;
+
+		return 0;
+	}
+	```
