@@ -31,28 +31,6 @@
 	 step 2:make
 	 step 3:include FM.h
 	 step 4: g++ your_program.cpp -o xx -fm.a
-###interface
-	 a snapshot of public part of FM.h is helpfull
-	 ```cpp
-	 class FM
-	{
-		public:
-				FM(const char * filename,int block_size = 256,int D=32,int shape=1);
-				FM();
-				~FM();
-				void Counting(const char *pattern,int &num);
-				void Locating(const char *pattern,int & num,int *&pos);
-				void Extracting(int pos,int len,char *sequence);
-				int Load(const char * indexfile);
-				int Save(const char * indexfile);
-				int GetN();
-				int SizeInByte();
-				int SizeInByte_count();
-		private:
-				...
-	}
-	```
-
 
 ###example
 	```cpp
@@ -81,6 +59,10 @@
 		cout<<"T[start...start+len-1] is "<<sequence<<endl;
 		delete [] sequence;//it's your duty to delete sequence.
     	sequence =NULL;
+
+		fm.Save("index.fm");//serialize the fm object to file index.fm
+		FM fm2;
+		fm2->Load("index.fm");//restore the fm object from file index.fm
 
 		return 0;
 	}
