@@ -32,9 +32,6 @@
 	 step 3:include FM.h
 	 step 4: g++ your_program.cpp -o xx -fm.a
 ###example
-'#include"FM.h"'
-'#include<iostream>'
-using namespace std;
 int main()
 {
 	FM fm("filename");
