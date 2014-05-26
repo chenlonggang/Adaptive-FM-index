@@ -38,7 +38,7 @@
 		fm.Counting("the",num);
 		cout<<"pattern the occs "<<num<<" times"<<endl;
 		int *pos;
-		fm.Locating("love",num.pos);
+		fm.Locating("love",num,pos);
 		cout<<"pattern love occs "<<num<<" times"<<endl;
 		cout<<"all the positions are:";
 		for(int i=0;i<num;i++)
