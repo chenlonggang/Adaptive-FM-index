@@ -803,13 +803,10 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 	{
 		//runs = R4[x>>48]; //查找表可以解码的runs数目.
 		runs = R[(x>>48)<<2];
-		//cout<<runs<<endl;
 		if(runs >0)
 		{
-			//cout<<runs<<endl;
 			//step = R2[x>>48];
 			step = R[1+((x>>48)<<2)];
-			//cout<<step<<endl;
 			already = already + step;
 			if(already > 64)
 			{
