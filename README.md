@@ -1,8 +1,8 @@
 #Hybrid-FM-index
 
 ##What is it?
-	 FM-index is a Succinct Data Structure(SDS), SDS can represent an object as whole object
-	 in logic,in space close to information-theoretic lower bound of the object while 
+	 FM-index is a Succinct Data Structure(SDS), SDS can represent an object as implicitly,
+	 and in space close to information-theoretic lower bound of the object while 
 	 supporting operations of the original object efficiently.
 	 FM-index and CSA(compressed suffix array) both are implicit expression about SA(suffix array),
 	 has the ability of fast pattern maching,and nedds little space,Hybrid-FM-index is close to 
