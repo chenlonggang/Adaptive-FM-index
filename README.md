@@ -1,10 +1,4 @@
 #Hybrid-FM-index
-	 
-###if you
-	 have any ideas and need a listener,email me!
-	 have any trouble in using it,email me!
-	 have found any bugs,let me know,emial me!
-
 
 ##What is it?
 	 FM-index is a Succinct Data Structure(SDS), SDS can represent an object as whole object
