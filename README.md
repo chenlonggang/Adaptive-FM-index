@@ -32,12 +32,15 @@
 	 step 3:include FM.h
 	 step 4: g++ your_program.cpp -o xx -fm.a
 ###example
-int main()
-{
-	FM fm("filename");
-	int num=0;
-	fm.Counting("the",num);
-	cout<<"Pattern the occs "<<num<<"times "<<endl;
-	return 0;
-}
+1:#include"FM.h"
+2:#include<iostream>
+3:#using namespace std;
+4:int main()
+5:{
+6:	FM fm("filename");
+7:	int num=0;
+8:	fm.Counting("the",num);
+9:	cout<<"Pattern the occs "<<num<"times "<<endl;
+10:	return 0;
+11:}
 
