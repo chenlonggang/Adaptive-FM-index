@@ -2,7 +2,7 @@
 #include<math.h>
 #include<iostream>
 using namespace std;
-int popcnt(unsigned long long int x)
+inline int popcnt(unsigned long long int x)
 {
 	x = x -((x & 0xAAAAAAAAAAAAAAAA)>>1);
 	x = (x & 0x3333333333333333)+((x>>2) & 0x3333333333333333);
@@ -172,7 +172,8 @@ void WT_Node::Coding()
 */
 
 
-		int len = min(rl_g,min(rl_f,block_size));
+		int thred=40;
+		int len = min(rl_g,min(rl_f,block_size-thred));
 
 		
 		if(k==1)
@@ -184,7 +185,7 @@ void WT_Node::Coding()
 			space = space +0;
 		}
 
-		else if(len == block_size || index == bitLen)//plain
+		else if(len == (block_size-thred) || index == bitLen)//plain
 		{
 			coding_style->SetValue((index-1)/block_size,2);
 			int j=0;
@@ -218,47 +219,6 @@ void WT_Node::Coding()
 				Append_g(temp,index2,runs_tmp[i]);
 			}
 		}
-
-
-
-
-	/*	
-		else  if(rl_g < block_size && index < bitLen)//rl_gamma编码较好.
-		{
-			if(firstbit == 0)//rl0:以0打头的run。
-				coding_style->SetValue((index-1)/block_size,0);
-			else
-				coding_style->SetValue((index-1)/block_size,1);
-			space = space + rl_g;
-			for(int i=0;i<k;i++)
-			{
-//				cout<<runs_tmp[i]<<endl;
-				Append(temp,index2,runs_tmp[i]);//以gamma编码的方式将runs编码。index2联动.
-			}
-
-		}
-	
-		else
-		{
-			coding_style->SetValue((index-1)/block_size,2);
-			int j=0;
-			int num = 0;
-			if(index == bitLen)
-			{
-				space = space + bits;
-				j = (index-bits)/64;
-				num = bits%64?bits/64+1:bits/64;
-			}
-			else
-			{
-				space = space + block_size;
-				j = (index - block_size)/64;
-				num = block_size/64;
-			}
-			for(int kk=0;kk<num;kk++,j++)
-				BitCopy(temp,index2,data[j]);
-		}
-	*/
 	
 		//打表顺序，superblock在前,block在后.
 		if(index % step1 == 0)
