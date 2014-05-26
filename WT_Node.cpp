@@ -2,6 +2,7 @@
 #include<math.h>
 #include<iostream>
 using namespace std;
+#define lookuptable
 inline int popcnt(unsigned long long int x)
 {
 	x = x -((x & 0xAAAAAAAAAAAAAAAA)>>1);
@@ -172,7 +173,7 @@ void WT_Node::Coding()
 */
 
 
-		int thred=40;
+		int thred=20;
 		int len = min(rl_g,min(rl_f,block_size-thred));
 
 		
@@ -526,7 +527,7 @@ int WT_Node::RL0_Rank(u64 * buff ,int &index,int bits_num)
 	}
 */
 
-	 
+#ifndef lookuptable	 
 	int rank = 0;
 	int already = 0;
 	u64 x= GetBits(buff,index,64);
@@ -565,9 +566,9 @@ int WT_Node::RL0_Rank(u64 * buff ,int &index,int bits_num)
 			 return rank + bits_num;
 		 x = (x<<bits);
 	}
+#endif
 
-
-/*	
+#ifdef lookuptable	
 	int rank = 0;
 	int r=0;
 	int already = 0;
@@ -577,7 +578,7 @@ int WT_Node::RL0_Rank(u64 * buff ,int &index,int bits_num)
 	int runs =0 ;//本次解码的runs数目
 	int runs_num = 0;//累的runs数目.
 	//cout<<bits_num<<endl;
-	if(bits_num > 64)
+	if(bits_num > 32)
 	{
 		while(true)
 		{
@@ -680,7 +681,7 @@ int WT_Node::RL0_Rank(u64 * buff ,int &index,int bits_num)
 		runs_num++;
 		x=(x<<step);
 	}
-*/
+#endif
 }
 
 
@@ -748,7 +749,7 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 			return rank;
 	}
 */
-
+#ifndef lookuptable
 	int rank = 0;
 	int already = 0;
 	u64 x = GetBits(buff,index,64);
@@ -785,9 +786,9 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 		x=(x<<bits);
 	}
 
+#endif
 
-
-/*
+#ifdef lookuptable
 	int rank = 0;
 	int r=0;
 	int already = 0;
@@ -796,7 +797,7 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 	int step = 0;//
 	int runs =0 ;//本次解码的runs数目
 	int runs_num = 0;//累计的runs数目
-	if(bits_num > 64)
+	if(bits_num > 32)
 	{
 	while(true)
 	{
@@ -896,7 +897,7 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 		runs_num++;
 		x=(x<<step);
 	}
-*/
+#endif 
 }
 
 int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num,int & bit)
