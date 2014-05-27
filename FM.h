@@ -6,13 +6,16 @@
 #include"Huffman_WT.h"
 #include"Balance_WT.h"
 #include"Hutacker_WT.h"
-
+#include"WT_Handle.h"
 class FM
 {
 	public:
-		FM(const char * filename,int block_size = 1024,int D=32,int shape=1);
+		FM(const char * filename,int block_size = 256,int D=32,int shape=1);
 		FM();
-		~FM();
+		~FM(){};
+		FM(const FM & h):wt(h.wt){}
+		FM& operator =(const FM&h){wt=h.wt;return *this;};
+		
 		void Counting(const char *pattern,int &num);
 		void Locating(const char *pattern,int & num,int *&pos);
 		void Extracting(int pos,int len,char *sequence);
@@ -23,8 +26,7 @@ class FM
 		int SizeInByte();
 		int SizeInByte_count();
 	private:
-		ABS_FM * fm;
-		int tree_shape;
+		WT_Handle wt;
 };
 #endif
 

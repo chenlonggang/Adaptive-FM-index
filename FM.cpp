@@ -1,56 +1,29 @@
 #include"FM.h"
-FM::FM(const char *filename,int block_size,int D,int shape)
-{
-	if(block_size<=0 || shape<0 || shape >2)
-	{
-		cout<<"FM::FM error parmater"<<endl;
-		exit(0);
-	}
-	this->tree_shape = shape;
-	switch(this->tree_shape)
-	{
-		//hutacker
-		case 0: fm =new Hutacker_FM(filename,block_size,D);break;
-		case 1: fm =new Huffman_FM(filename,block_size,D);break;
-		case 2: fm =new Balance_FM(filename,block_size,D);break;
-		default: fm=new Hutacker_FM(filename,block_size,D);break;
-	}
-	fm->BuildTree();
-//	cout<<"BuildTree is ok"<<endl;
-}
 
+FM::FM(const char *filename,int block_size,int D,int shape):wt(filename,block_size,D,shape){}
 
-FM::FM()
-{
-	tree_shape = 0;
-	fm=NULL;
-}
-FM::~FM()
-{
-	delete fm;
-}
+FM::FM():wt(){}
 
 int FM::GetN()
 {
-	return fm->GetN()-1;
+	return wt.GetN()-1;
 }
 
 int FM::SizeInByte()
 {
-	return fm->SizeInByte();
+	return wt.SizeInByte();
 }
 
 int FM::SizeInByte_count()
 {
-	return fm->SizeInByte_count();
+	return wt.SizeInByte_count();
 }
 
 int FM::Save(const char * indexfile)
 {
 	savekit s(indexfile);
 	s.writeu64(198809102510);
-	s.writei32(tree_shape);
-	fm->Save(s);
+	wt.Save(s);
 	s.close();
 	return 0;
 }
@@ -66,15 +39,7 @@ int FM::Load(const char * indexfile)
 		cerr<<"Not a FM_Index file"<<endl;
 		exit(0);
 	}
-	s.loadi32(tree_shape);
-	switch(this->tree_shape)
-	{
-		case 0: fm = new Hutacker_FM();break;
-		case 1: fm = new Huffman_FM();break;
-		case 2: fm = new Balance_FM();break;
-		default:fm = new Hutacker_FM();break;
-	}
-	fm->Load(s);
+	wt.Load(s);
 	s.close();
 	cout<<"Load is ok"<<endl;
 	return 0;
@@ -83,18 +48,18 @@ int FM::Load(const char * indexfile)
 
 void FM::Counting(const char * pattern,int &num)
 {
-	fm->Counting(pattern,num);
+	wt.Counting(pattern,num);
 }
 
 
 void FM::Locating(const char * pattern,int & num,int * & pos)
 {
-	fm->Locating(pattern,num,pos);
+	wt.Locating(pattern,num,pos);
 }
 
 
 void FM::Extracting(int pos,int len,char *sequence)
 {
-	fm->Extracting(pos,len,sequence);
+	wt.Extracting(pos,len,sequence);
 }
 
