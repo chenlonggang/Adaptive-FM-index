@@ -6,8 +6,7 @@ FM::FM(const char *filename,int block_size,int D,int shape)
 		cout<<"FM::FM error parmater"<<endl;
 		exit(0);
 	}
-	this->tree_shape = shape;
-	switch(this->tree_shape)
+	switch(shape)
 	{
 		//hutacker
 		case 0: fm =new Hutacker_FM(filename,block_size,D);break;
@@ -22,7 +21,6 @@ FM::FM(const char *filename,int block_size,int D,int shape)
 
 FM::FM()
 {
-	tree_shape = 0;
 	fm=NULL;
 }
 FM::~FM()
@@ -49,7 +47,6 @@ int FM::Save(const char * indexfile)
 {
 	savekit s(indexfile);
 	s.writeu64(198809102510);
-	s.writei32(tree_shape);
 	fm->Save(s);
 	s.close();
 	return 0;
@@ -66,14 +63,8 @@ int FM::Load(const char * indexfile)
 		cerr<<"Not a FM_Index file"<<endl;
 		exit(0);
 	}
-	s.loadi32(tree_shape);
-	switch(this->tree_shape)
-	{
-		case 0: fm = new Hutacker_FM();break;
-		case 1: fm = new Huffman_FM();break;
-		case 2: fm = new Balance_FM();break;
-		default:fm = new Hutacker_FM();break;
-	}
+
+	fm = new ABS_FM();
 	fm->Load(s);
 	s.close();
 	cout<<"Load is ok"<<endl;

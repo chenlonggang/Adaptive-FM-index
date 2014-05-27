@@ -10,7 +10,7 @@
 class FM
 {
 	public:
-		FM(const char * filename,int block_size = 1024,int D=32,int shape=1);
+		FM(const char * filename,int block_size = 256,int D=32,int shape=1);
 		FM();
 		~FM();
 		void Counting(const char *pattern,int &num);
@@ -24,7 +24,6 @@ class FM
 		int SizeInByte_count();
 	private:
 		ABS_FM * fm;
-		int tree_shape;
 };
 #endif
 
