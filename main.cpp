@@ -1,201 +1,120 @@
 #include<stdlib.h>
-#include<string.h>
 #include"FM.h"
-#include<ctime>
-#include<fstream>
 #include<iostream>
 using namespace std;
-void usage();
-void helpbuild();
-void helpload();
-void helpsave();
-void helpcount();
-void helplocate();
-void splitcommand(string command,string result[]);
-void showpos(int * pos,int num);
-int main(int argc, char* argv[])
+#define  times 10000
+int main(int argc,char ** argvs)
 {
 	
-	usage();
-	string command;
-	string  result[3];
-	char filename[100]={'\0'};
-	char indexname[100]={'\0'};
-	FM *csa=NULL;
-	while(1)
+	if(argc ==5)
 	{
-		result[0]="";
-		result[1]="";
-		result[2]="";
-		command="";
-		cout<<">";
-		getline(cin,command);
-		splitcommand(command,result);
-		if(result[0]=="quit")
-			break;
-		else if(result[0]=="build")
+
+		if(argc!=5)
 		{
-			if(csa!=NULL)
-				delete csa;
-			csa=NULL;
-			csa=new FM(result[1].data());
+			cout<<"error parmater"<<endl;
+			exit(0);
 		}
-		else if(result[0]=="count")
+		cout<<"Pattern: "<<argvs[2]<<endl;
+		FM fm(argvs[1]);
+		int num=0;
+		fm.Counting(argvs[2],num);
+		cout<<"Counting: "<<num<<endl;
+		int * pos=NULL;
+		cout<<"Locating:"<<endl;
+		fm.Locating(argvs[2],num,pos);
+		for(int i=0;i<num && i<10;i++)
+			cout<<pos[i]<<endl;
+		char * p= new char[atoi(argvs[4])+1];
+		p[atoi(argvs[4])]='\0';
+		cout<<"Extracting :"<<"["<<argvs[3]<<" "<<argvs[4]<<"]"<<endl;
+		fm.Extracting(atoi(argvs[3]),atoi(argvs[4]),p);
+		cout<<p<<endl;
+	
+		return 0;
+	}
+	else
+	{
+
+		if(argc!=2)
 		{
-			int num=0;
-			if(csa!=NULL)
-			{
-				csa->Counting(result[1].data(),num);
-				cout<<"occs: "<<num<<endl;
-			}
-			else
-			{
-				cout<<"build a csa first"<<endl;
-			}
+			cout<<"use it like:   ./my_fm file"<<endl;
+			exit(0);
 		}
-		else if(result[0]=="locate")
+
+		time_t t3 = clock();
+		FM fm(argvs[1]);
+		time_t t4 = clock();
+		cout<<"build time: "<<(t4-t3)/1000000.0<<endl;
+		cout<<"fm is ready"<<endl;
+		int n =fm.GetN();
+		int size = fm.SizeInByte_count();
+		cout<<"szie "<<size/(n*1.0)<<endl;
+		char p[times][21]={'\0'};
+		for(int i=0;i<times;i++)
 		{
-			int * pos;
-			int num=0;
-			if(csa!=NULL)
-			{
-				csa->Locating(result[1].data(),num,pos);
-				showpos(pos,num);
-				delete [] pos;
-			}
-			else
-				cout<<"build a csa first"<<endl;
+			int x = rand()%( n - 50);
+			fm.Extracting(x,20,p[i]);
+			//cout<<p[i]<<endl;
 		}
-		else if(result[0]=="del")
+		cout<<"pattern is ready"<<endl;
+
+		double totnum =0;
+		int num = 0;
+		time_t t1 =clock();
+		for(int i=0;i<times;i++)
 		{
-			if(csa!=NULL)
-				delete csa;
-			csa=NULL;
+			fm.Counting(p[i],num);
+			totnum = totnum + num;
 		}
-		else if(result[0]=="load")
+		time_t t2 =clock();
+		cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+		cout<<"avera-nums: "<<totnum/times<<endl;
+
+/*
+
+		time_t t5 = clock();
+		int * pos=NULL;
+		char temp[21]={'\0'};
+		for(int i=0;i<times;i++)
 		{
-			if(csa!=NULL)
-				delete csa;
-			csa=new FM();
-			csa->Load(result[1].data());
+			fm.Locating(p[i],num,pos);
+
+			delete [] pos;
 		}
-		else if(result[0]=="save")
-		{
-			csa->Save(result[1].data());
-		}
-		else if(result[0]=="size")
-		{
-			if(csa!=NULL)
-				cout<<csa->SizeInByte()<<endl;
-			else
-				cout<<"build a csa first"<<endl;
-		}
-		else if(result[0]=="help")
-		{
-			if(result[1]=="build")
-				helpbuild();
-			if(result[1]=="count")
-				helpcount();
-			if(result[1]=="locate")
-				helplocate();
-			if(result[1]=="load")
-				helpload();
-			if(result[1]=="save")
-				helpsave();
-		}
-		else
-			usage();
+		time_t t6 = clock();
+		cout<<"locat-time: "<<(t6-t5)/1000000.0<<endl;
+*/		
+//		cout<<n<<endl;
+
+/*		char * pp =new  char[n];
+		memset(pp,0,n);
+		fm.Extracting(0,n,pp);
+		for(int i=0;i<n;i++)
+			cout<<pp[i];
+*/		
+
+/*		// for Save and Load
+		fm.Save("fm.index");
+		cout<<"Save is ok"<<endl;
+		FM fm1;
+		fm1.Load("fm.index");
+		cout<<"fm1 is load ok"<<endl;
+		fm1.Counting("the",num);
+		cout<<num<<endl;
+		char  s[21]={'\0'};
+		fm1.Extracting(0,20,s);
+		cout<<s<<endl;
+		int * sa;
+		fm1.Locating("the",num,sa);
+		for(int i=0;i<10;i++)
+			cout<<sa[i]<<endl;
+
+		fm1=fm;
+
+*/
+		return 0;
 	}
 
-	return 0;
-}
-
-void showpos(int * pos,int num)
-{
-	cout<<"occs:"<<num<<endl;
-	for(int i=0;i<num;i++)
-	{
-		cout<<pos[i]<<endl;
-		if((i+1)%10==0)
-		{
-			char command;
-			cout<<"-----------------more---------------------";
-			system("stty raw");
-			command=getchar();
-     		cout<<endl<<'\r';
-			system("stty cooked");
-			if(command==27)//按下空格，返回
-			{
-				cout<<endl;
-				return ;
-			}
-		}
-	}
-}
-
-
-
-
-void splitcommand(string command,string result[])
-{
-
-	int i=0;
-	int j=0;
-	int start=0;
-//	command=command+" ";
-	int len=command.length();
-	result[0]=command;
-	for(i=0;i<len;i++)
-	{
-		if(command.at(i)!=' ')
-			continue;
-		else
-		{
-			result[j]=command.substr(start,i-start);
-			start=i+1;
-			j++;
-		}
-	}
-	result[j]=command.substr(start,len);
-}
-void usage()
-{
-	cout<<"--------------------------------------------------------------------------------------"<<endl;
-	cout<<"The flowing commands are supported "<<endl;
-	cout<<"	help XX: show the details for the command XX"<<endl;
-	cout<<"	build XX : build the index of file XX"<<endl;
-	cout<<"	load  XX: load the index file XX"<<endl;
-	cout<<"	save XX: write the csa to a index file XX"<<endl;
-	cout<<"	count XX: count the pattern XX's occs" <<endl;
-	cout<<"	locate YY: enum eyery  position of the pattern"<<endl;
-	cout<<"	size: the size of the csa"<<endl;
-	cout<<"	del : delete the current csa"<<endl;
-	cout<<"	quit: say goodbye"<<endl;
 
 }
-void helpbuild()
-{
-	cout<<"build XX [-rl|-RL]"<<endl;
-	cout<<"	XX:the source file,it's you responsibility to provide a correct path"<<endl;
-	cout<<"	If -rl or -RL is provided,runlength will be used"<<endl;
-}
-void helpcount()
-{
-	cout<<"count XX"<<endl;
-	cout<<"	XX:the pattern.you have the responsibility to ensure the index csa is nearby,otherwise,nothing you will get"<<endl;
-}
-void helplocate()
-{
-	cout<<"locate XX"<<endl;
-	cout<<"	XX: the pattern.it's like count, and you can scan the positions of all the occs in a manner like the system command -more-"<<endl;
-}
-void helpload()
-{
-	cout<<"load XX"<<endl;
-	cout<<"	XX: the csa index file, the command will read the index file and build a csa secretly"<<endl;
-}
-void helpsave()
-{
-	cout<<"save XX"<<endl;
-	cout<<"	XX: the csa index file, the command will save the csa in file XX"<<endl;
-}
+

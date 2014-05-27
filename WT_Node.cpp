@@ -59,10 +59,12 @@ int WT_Node::SizeInByte()
 	int size = 0;
 	if(data!=NULL)
 	{
+		//return bitLen/8;
 		size+= superblock->GetMemorySize();
 		size+= block->GetMemorySize();
 		size+= coding_style->GetMemorySize();
 		size+= memorysize;
+	
 	}
 	return size;
 }

@@ -64,7 +64,7 @@ class ABS_FM
 		void DrawBackSearch(const char * pattern,int &Left,int & Right);
 		int Lookup(int i);
 
-		virtual int TreeCode()=0;
+		virtual int TreeCode(){return -1;};
 		//每种树形只有TreeCode方法不一样.
 		//该方法创建编码表，即初始化codeTable表，之后
 		//BuildTree方法利用该标创建小波树.
