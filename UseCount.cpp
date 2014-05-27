@@ -5,7 +5,7 @@ UseCount::UseCount(const UseCount &u):p(u.p){++*p;}
 
 UseCount::~UseCount(){if(--*p==0) delete p;}
 
-bool UseCount::only() {return *p==1}
+bool UseCount::only() {return *p==1;}
 
 bool UseCount::reattach(const UseCount & u)
 {

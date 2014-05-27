@@ -1,3 +1,5 @@
+#ifndef USECOUNT_H
+#define USECOUNT_H
 class UseCount
 {
 	public:
@@ -9,4 +11,5 @@ class UseCount
 	private:
 		int *p;
 		UseCount & operator = (const UseCount &);
-}
+};
+#endif

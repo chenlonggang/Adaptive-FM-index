@@ -1,6 +1,11 @@
 #include"WT_Handle.h"
+#include"Huffman_WT.h"
+#include"Balance_WT.h"
+#include"Hutacker_WT.h"
 
-WT_handle::WT_Handle(const char * filename,int block_size=256,int D=32,int shape = 1)
+WT_Handle::WT_Handle():fm(new ABS_FM()),u(){}
+
+WT_Handle::WT_Handle(const char * filename,int block_size,int D,int shape)
 {
 	if(block_size<=0 || shape<0 || shape >2)
 	{
@@ -18,12 +23,14 @@ WT_handle::WT_Handle(const char * filename,int block_size=256,int D=32,int shape
 	fm->BuildTree();
 }
 
-WT_Handle::WT_Handle(const WT_Handle &h):u(h.u),fm(h.fm){}
+WT_Handle::WT_Handle(const WT_Handle &h):fm(h.fm),u(h.u){}
 
-WT_Handle::WT_handle:: operator =(const WT_Handle & h)
+WT_Handle & WT_Handle::WT_Handle:: operator =(const WT_Handle & h)
 {
 	if(u.reattach(h.u))
+	{
 		delete fm;
+	}
 	fm = h.fm;
 	return * this;
 }
