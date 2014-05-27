@@ -65,7 +65,7 @@ ABS_FM::~ABS_FM()
 
 int ABS_FM::SizeInByte()
 {
-	return TreeSizeInByte(root);// + SAL->GetMemorySize() + RankL->GetMemorySize();
+	return TreeSizeInByte(root)+ SAL->GetMemorySize() + RankL->GetMemorySize();
 }
 
 int ABS_FM::SizeInByte_count()
@@ -141,7 +141,7 @@ void ABS_FM::Counting(const char * pattern,int & num)
 	int Left=1;
 	int Right =0;
 	DrawBackSearch(pattern,Left,Right);
-	cout<<"Counting "<<Left<<" "<<Right<<endl;
+//	cout<<"Counting "<<Left<<" "<<Right<<endl;
 	num = Right -Left +1;
 }
 
@@ -159,7 +159,7 @@ void ABS_FM::Locating(const char * pattern,int &num,int *& pos)
 	{
 		num = Right - Left + 1;
 		pos =new int[num];
-		for(int i=0;i<num;i++)
+		for(int i=0;i<num && i<10;i++)
 		{
 			pos[i]=Lookup(Left + i);
 		}
