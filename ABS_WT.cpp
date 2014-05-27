@@ -65,7 +65,7 @@ ABS_FM::~ABS_FM()
 
 int ABS_FM::SizeInByte()
 {
-	return TreeSizeInByte(root);// + SAL->GetMemorySize() + RankL->GetMemorySize();
+	return TreeSizeInByte(root) + SAL->GetMemorySize() + RankL->GetMemorySize();
 }
 
 int ABS_FM::SizeInByte_count()
