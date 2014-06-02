@@ -69,6 +69,7 @@ int main(int argc,char ** argvs)
 		time_t t2 =clock();
 		cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
 		cout<<"avera-nums: "<<totnum/times<<endl;
+		cout<<"totnum :"<<totnum<<endl;
 
 /*
 

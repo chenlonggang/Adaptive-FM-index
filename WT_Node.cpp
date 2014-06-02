@@ -602,6 +602,10 @@ int WT_Node::RL0_Rank(u64 * buff ,int &index,int bits_num)
 				//bits = R1[x>>48];
 				bits = R[2+((x>>48)<<2)];
 				//r = R3[x>>48];
+				
+				//It's important
+				bits = (bits==0)?256:bits;
+				
 				r = R[3+((x>>48)<<2)];
 				if((runs_num & 0x01) ==1)
 					rank = rank + r;
@@ -818,6 +822,8 @@ int WT_Node::RL1_Rank(u64 * buff,int &index,int bits_num)
 			//bits = R1[x>>48];
 			bits = R[2+((x>>48)<<2)];
 			//r = R3[x>>48];
+			//It's important
+			bits =(bits==0)?256:bits;
 			r = R[3+((x>>48)<<2)];
 			if((runs_num & 0x01) ==0)
 				rank = rank + r;
