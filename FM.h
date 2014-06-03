@@ -10,7 +10,7 @@
 class FM
 {
 	public:
-		FM(const char * filename,int block_size = 1024,int D=32,int shape=1);
+		FM(const char * filename,int block_size = 256,int D=32,int shape=1);
 		FM();
 		~FM(){};
 		FM(const FM & h):wt(h.wt){}
