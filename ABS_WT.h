@@ -3,7 +3,7 @@
 #define CHAR_SET_SIZE 256
 #define CODE_MAX_LEN 256
 #include<string.h>
-#include"WT_Node.h"
+#include"BitMap.h"
 #include"InArray.h"
 #include"loadkit.h"
 #include"savekit.h"
@@ -27,7 +27,7 @@ class ABS_FM
 		int SizeInByte();
 		int SizeInByte_count();
 	protected:
-		WT_Node * root;
+		BitMap * root;
 		uchar * zerostable;
 	//	uchar * R1;//16bits表示的gamma编码的编码值的和
 	//	uchar * R2;//16bits可以完整解码的bits数
@@ -59,6 +59,7 @@ class ABS_FM
 
 		int Occ(int &rank,unsigned char &label,int pos);
 		int Occ(unsigned char c,int pos);
+		//void Occ(unsigned char c,int pos_left,int pos_right,int &left,int &right);
 		int LF(int i);
 		unsigned char L(int i);
 		void DrawBackSearch(const char * pattern,int &Left,int & Right);
@@ -70,27 +71,27 @@ class ABS_FM
 		//BuildTree方法利用该标创建小波树.
 
 		int BWT(unsigned char * T,int * SA,unsigned char * bwt,int n);
-		WT_Node * CreateWaveletTree(unsigned char * bwt,int n);
-		WT_Node * FullFillWTNode(unsigned char * bwt,int len,int level);
+		BitMap * CreateWaveletTree(unsigned char * bwt,int n);
+		BitMap * FullFillWTNode(unsigned char * bwt,int len,int level);
 		int DestroyWaveletTree();
 		int blog(int);
 		unsigned char * Getfile(const char * filename);
 
 		//只保存小波树该有的东西,不包快查找表
 		//保存查找表是ABS_WT类的save的工作
-		int SaveNodePosition(WT_Node *,u32, savekit &);
-		int SaveNodeData(WT_Node *,savekit &s);
+		int SaveNodePosition(BitMap *,u32, savekit &);
+		int SaveNodeData(BitMap *,savekit &s);
 		int SaveWTTree(savekit & s);
 		int LoadWTTree(loadkit & s,uchar ** tables=NULL);
 		
-		int TreeNodeCount(WT_Node * root);
+		int TreeNodeCount(BitMap * root);
 
-		int TreeSizeInByte(WT_Node * r);
+		int TreeSizeInByte(BitMap * r);
 	//	int TreeSizeInByte();
 		friend int GammaDecode(u64 * buff,int & index,ABS_FM * t);
 		void Test_L();
 		void Test_Occ();
-		void Test_Shape(WT_Node *);
+		void Test_Shape(BitMap *);
 
 };
 #endif

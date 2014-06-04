@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<sys/time.h>
 #include"FM.h"
 #include<iostream>
 using namespace std;
@@ -60,14 +61,19 @@ int main(int argc,char ** argvs)
 
 		double totnum =0;
 		int num = 0;
-		time_t t1 =clock();
+		//time_t t1 =clock();
+		struct timeval start;
+		struct timeval end;
+		gettimeofday(&start,NULL);
 		for(int i=0;i<times;i++)
 		{
 			fm.Counting(p[i],num);
 			totnum = totnum + num;
 		}
-		time_t t2 =clock();
-		cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+		gettimeofday(&end,NULL);
+		//time_t t2 =clock();
+		//cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+		cout<<"count-time: "<<((end.tv_sec-start.tv_sec)*1000000.0+end.tv_usec - start.tv_usec)/times<<endl;
 		cout<<"avera-nums: "<<totnum/times<<endl;
 
 /*

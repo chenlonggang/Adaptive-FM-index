@@ -73,13 +73,13 @@ int ABS_FM::SizeInByte_count()
 	return TreeSizeInByte(root);
 }
 
-int ABS_FM::TreeNodeCount(WT_Node * r)
+int ABS_FM::TreeNodeCount(BitMap * r)
 {
 	if(r==NULL)
 		return 0;
 	return TreeNodeCount(r->Left()) + TreeNodeCount(r->Right()) + 1;
 }
-int ABS_FM::TreeSizeInByte(WT_Node * r)
+int ABS_FM::TreeSizeInByte(BitMap * r)
 {
 	int size = 0;
 	if(r->Left())
@@ -125,6 +125,8 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 		Left = C[coding]+Occ(c,Left-1);
 		Right =C[coding]+Occ(c,Right)-1;
 		i=i-1;
+//		if(Right/256 == Left/256)
+//			cout<<i<<endl;
 	}
 	if(Right < Left)
 	{
@@ -251,10 +253,15 @@ int ABS_FM::Lookup(int i)
 	i=i/D;
 	return (SAL->GetValue(i)+step)%n;
 }
-
+/*
+void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &left,int &right)
+{
+	return ;
+}
+*/
 int ABS_FM::Occ(unsigned char c,int pos)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int level = 0;
 	char code ='0';
 	while(r->Left() && pos > -1)
@@ -296,11 +303,11 @@ int ABS_FM::LF(int i)
 
 unsigned char ABS_FM::L(int i)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int bit =0;
 	int rank = 0;
 
-/*	//Bit(i)和Rank(i)可以在一步内计算出来，可以减少一次检索WT_Node的功夫.
+/*	//Bit(i)和Rank(i)可以在一步内计算出来，可以减少一次检索BitMap的功夫.
 	while(r->Left() || r->Right())
 	{
 		//bit = r->GetBit(data,i);
@@ -344,7 +351,7 @@ unsigned char ABS_FM::L(int i)
 
 int ABS_FM::Occ(int & occ , unsigned char & label,int pos)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int bit =0;
 	int rank =0;
 	while(r->Left())
@@ -491,7 +498,7 @@ int ABS_FM::BuildTree()
 	return 0;
 }
 
-void ABS_FM::Test_Shape(WT_Node * r)
+void ABS_FM::Test_Shape(BitMap * r)
 {
 	if(r->Left() && r->Right())
 	{
@@ -541,9 +548,9 @@ void ABS_FM::Test_L()
 }
 
 
-WT_Node * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
+BitMap * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
 {
-	WT_Node * root = NULL;
+	BitMap * root = NULL;
 
 	root = FullFillWTNode(bwt,n,0);
 	if(!root)
@@ -555,7 +562,7 @@ WT_Node * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
 }
 
 
-WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
+BitMap * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 {
 //	cout<<level<<endl;
 	int CurrentLevel = level;
@@ -568,7 +575,7 @@ WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 		CurrentBitBuff = NULL;
 		//uchar * tables[5]={this->zerostable,this->R1,this->R2,this->R3,this->R4};
 		uchar * tables[2] ={this->zerostable,this->R};
-		WT_Node * node = new WT_Node(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
+		BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 		node->Left(NULL);
 		node->Right(NULL);
 		return node;
@@ -624,18 +631,18 @@ WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 
 	//uchar * tables[5] = {this->zerostable,this->R1,this->R2,this->R3,this->R4};
 	uchar * tables[2] = {this->zerostable,this->R};
-	WT_Node * node = new WT_Node(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
+	BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 
 	if(leftLen !=0)
 	{
-		WT_Node * left =FullFillWTNode(lptr,leftLen,level+1);
+		BitMap * left =FullFillWTNode(lptr,leftLen,level+1);
 		node->Left(left);
 		delete [] lptr;
 		lptr=NULL;
 	}
 	if(rightLen!=0)
 	{
-		WT_Node * right = FullFillWTNode(rptr,rightLen,level+1);
+		BitMap * right = FullFillWTNode(rptr,rightLen,level+1);
 		node->Right(right);
 		delete [] rptr;
 		rptr=NULL;
@@ -724,7 +731,7 @@ void ABS_FM::Inittable()
 }
 
 //递归保存节点的编号信息
-int ABS_FM::SaveNodePosition(WT_Node * r,u32 position,savekit &s)
+int ABS_FM::SaveNodePosition(BitMap * r,u32 position,savekit &s)
 {
 	if(!r)
 		return 1;
@@ -735,7 +742,7 @@ int ABS_FM::SaveNodePosition(WT_Node * r,u32 position,savekit &s)
 }
 
 //递归保存节点的数据信息
-int ABS_FM::SaveNodeData(WT_Node *r,savekit &s)
+int ABS_FM::SaveNodeData(BitMap *r,savekit &s)
 {
 	if(!r)
 		return 1 ;
@@ -765,14 +772,14 @@ int ABS_FM::LoadWTTree(loadkit &s,uchar **tables)
 //	s.loadi32(nodecount);
 	int * p = new int[nodecount];
 	s.loadi32array(p,nodecount);
-	map<int,WT_Node * > pmap;
-	WT_Node * r=NULL;
+	map<int,BitMap * > pmap;
+	BitMap * r=NULL;
 	for(int i=0;i<nodecount;i++)
 	{
 		if(tables)
-			r = new WT_Node(tables);
+			r = new BitMap(tables);
 		else
-			r = new WT_Node();
+			r = new BitMap();
 		r->Load(s);
 		pmap[p[i]] = r;
 	}
@@ -780,8 +787,8 @@ int ABS_FM::LoadWTTree(loadkit &s,uchar **tables)
 //	cout<<"748"<<endl;
 
 	//挂链
-	map<int ,WT_Node *>::iterator iter;
-	map<int ,WT_Node *>::iterator f_iter;
+	map<int ,BitMap *>::iterator iter;
+	map<int ,BitMap *>::iterator f_iter;
 	for(iter = pmap.begin();iter!=pmap.end();iter++)
 	{
 		f_iter = pmap.find(2*iter->first);
