@@ -81,8 +81,6 @@ i32 InArray::GetDataWidth()
 
 i32 InArray::GetValue(i32 index)
 {
-
-
 	if(index>datanum-1||index<0)
 	{
 		cerr<<"InArray:GetValue: index out of boundary"<<endl;

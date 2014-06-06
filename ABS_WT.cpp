@@ -13,21 +13,26 @@ u64 GetBits(u64 * buff,int &index,int bits)
 	return high + (buff[(index>>6)+1]>>(64-second));
 }
 
+int Zeros(u16 x,ABS_FM *t)
+{
+	if(t->Z[x>>8]==8)
+		return t->Z[x>>8]+t->Z[(uchar)x];
+	else
+		return t->Z[x>>8];
+}
 int GammaDecode(u64 * buff,int & index,ABS_FM * t)
 {
 	u32 x = GetBits(buff,index,32);
-	int runs = t->zerostable[x>>16];
+	int runs = Zeros(x>>16,t);
 	int bits = (runs<<1)+1;
 	index = index + bits;
 	return x>>(32-bits);
 }
-
 ABS_FM::ABS_FM(const char * filename,int block_size,int D)
 {
 	this->block_size = block_size;
 	this->D =D;
 	this->T=NULL;
-	//read file,init C,T,alphabetsize,charMap.
 	T = Getfile(filename);
 	Inittable();
 
@@ -49,16 +54,8 @@ ABS_FM::~ABS_FM()
 		delete [] C;
 	if(code)
 		delete [] code;
-	if(zerostable)
-		delete [] zerostable;
-//	if(R1)
-//		delete [] R1;
-//	if(R2)
-//		delete [] R2;
-//	if(R3)
-//		delete [] R3;
-//	if(R4)
-//		delete [] R4;
+	if(Z)
+		delete [] Z;
 	if(R)
 		delete [] R;
 }
@@ -114,7 +111,6 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 	while ((Left <= Right) and (i>=0))
 	{
 		c = pattern[i];
-		//if(!charMap[c])
 		coding = code[c];
 		if(coding == -1)
 		{
@@ -125,8 +121,6 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 		Left = C[coding]+Occ(c,Left-1);
 		Right =C[coding]+Occ(c,Right)-1;
 		i=i-1;
-//		if(Right/256 == Left/256)
-//			cout<<i<<endl;
 	}
 	if(Right < Left)
 	{
@@ -173,43 +167,6 @@ void ABS_FM::Locating(const char * pattern,int &num,int *& pos)
 //末端开始采样，Rank采样在BuildTree方法中.
 void ABS_FM::Extracting(int pos,int len,char * &sequence)
 {
-/*	
-	if(pos+len > n-1 || pos < 0)
-	{
-		cout<<"ABS_FM::Extracting  error parmaters"<<endl;
-		exit(0);
-	}
-	sequence = new char[len+1];
-	memset(sequence,0,(len+1)*sizeof(char));
-
-	int end = pos + len -1;
-	int anchor = 0;
-	int overloop = 0;
-
-	int step = this->D*16;
-	if((end-1) % step == 0)
-	{
-		anchor = (end-1)/step;
-		overloop =0;
-	}
-	else
-	{
-		anchor = (end-1)/step +1;
-		overloop = step * step +1 - end;
-	}
-
-	//int i = anchor*step+1;
-table = zerostable;cout<<anchor<<endl;
-	int i = RankL->GetValue(anchor);
-	for(int j=0;j<overloop;j++)
-		i = LF(i);
-	
-	for(int j=0;j<len;j++)
-	{
-		sequence[len-1-j] = L(i);
-		i = LF(i);
-	}
-*/
 	if(pos + len > n-1 || pos <0)
 	{
 		cout<<pos<<"  "<<len<<endl;
@@ -395,7 +352,7 @@ unsigned char * ABS_FM::Getfile(const char *filename)
 	while((e=fread(T+num,sizeof(uchar),n-1-num,fp))!=0)
 		num = num +e;
 	if(num!=n-1)
-	{zerostable = zerostable;
+	{
 		cout<<"Read source file failed"<<endl;
 		exit(0);
 	}
@@ -408,7 +365,7 @@ unsigned char * ABS_FM::Getfile(const char *filename)
 		charFreq[T[i]]++;
 	this->alphabetsize = 0;
 	for(i32 i=0;i<256;i++)
-		if(charFreq[i]!=0)
+		if(charFreq[i])
 		{
 			this->alphabetsize++;
 			this->charMap[i]=true;
@@ -451,8 +408,6 @@ int ABS_FM::BWT(unsigned char *T,int * SA,unsigned char * bwt,int len)
 
 int ABS_FM::BuildTree()
 {
-//	T = Getfile(filename);
-//	Inittable();
 	int *SA = new int[n];
 	ds_ssort(T,SA,n);	
 	
@@ -531,8 +486,6 @@ void ABS_FM::Test_Occ()
 
 }
 
-
-
 void ABS_FM::Test_L()
 {
 	int mis=0;
@@ -574,7 +527,7 @@ BitMap * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 		CurrentLabel = buff[0];
 		CurrentBitBuff = NULL;
 		//uchar * tables[5]={this->zerostable,this->R1,this->R2,this->R3,this->R4};
-		uchar * tables[2] ={this->zerostable,this->R};
+		uchar * tables[2] ={this->Z,this->R};
 		BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 		node->Left(NULL);
 		node->Right(NULL);
@@ -630,7 +583,7 @@ BitMap * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 	CurrentBitBuff[bytePos] |= (last<<(63-bitOffset));
 
 	//uchar * tables[5] = {this->zerostable,this->R1,this->R2,this->R3,this->R4};
-	uchar * tables[2] = {this->zerostable,this->R};
+	uchar * tables[2] = {this->Z,this->R};
 	BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 
 	if(leftLen !=0)
@@ -673,18 +626,14 @@ int ABS_FM::blog(int x)
 
 void ABS_FM::Inittable()
 {
-	this -> zerostable = new uchar[1<<16];
-	int tablewidth = 16;
+	this -> Z = new uchar[1<<8];
+	int tablewidth = 8;
 	for(int i=0;i<tablewidth;i++)
 		for(int j=(1<<i);j<(2<<i);j++)
-			zerostable[j] = tablewidth-1-i;
-	zerostable[0] = tablewidth;
+			Z[j] = tablewidth-1-i;
+	Z[0] = tablewidth;
 	
 	u64 tablesize = (1<<16);
-//	R1 = new uchar[tablesize];
-//	R2 = new uchar[tablesize];
-//	R3 = new uchar[tablesize];
-//	R4 = new uchar[tablesize];
 	R  = new uchar[tablesize<<2];
 	
 	//查找表的初始化：在16bits的0,1串上模拟gamma解码的过程，得到
@@ -700,7 +649,6 @@ void ABS_FM::Inittable()
 	for(u64 i=0;i<tablesize;i++)
 	{
 		B[0] = (i<<48);
-//		B[0] =B[0] + (0x01ull<<48)-1;
 		sum  =0 ;
 		step = 0;
 		prestep=0;
@@ -709,7 +657,6 @@ void ABS_FM::Inittable()
 		while(1)
 		{
 			x = GammaDecode(B,step,this);//step会联动.
-		//	cout<<x<<endl;
 			if(step > 16)
 				break;
 			sum = sum + x;
@@ -718,10 +665,6 @@ void ABS_FM::Inittable()
 			if(runs%2==1)
 				rank = rank + x;
 		}
-		//R1[i] = sum;
-		//R2[i] = prestep;
-		//R3[i] = rank;
-		//R4[i] = runs;
 		R[i<<2] = runs;//r4
 		R[(i<<2)+1] = prestep;//r2
 		R[(i<<2)+2] = sum; //r1;
@@ -864,11 +807,9 @@ int ABS_FM::Load(loadkit &s)
 	//for Rankl
 	this->RankL = new InArray();
 	this->RankL->load(s);
-	//for lookup tables
-//	this->zerostable = new uchar[1<<16];
-//	this->R=new uchar[(1<<16)*4];
+
 	Inittable();
-	uchar * par[2]={zerostable,R};
+	uchar * par[2]={Z,R};
 	//cout<<"cs"<<endl;
 	LoadWTTree(s,par);
 //	cout<<"835"<<endl;

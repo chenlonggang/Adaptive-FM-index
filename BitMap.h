@@ -18,7 +18,7 @@ class BitMap
 		//label:当前节点代表的字符.只有叶节点的label域又意义.
 		
 		BitMap(){};
-		BitMap(uchar ** tables):zerostable(tables[0]),R(tables[1]){}
+		BitMap(uchar ** tables):Z(tables[0]),R(tables[1]){}
 		~BitMap();
 
 		int Rank(int pos);
@@ -42,7 +42,7 @@ class BitMap
 		int Save(savekit & S);
 		int SizeInByte();
 	private:
-		uchar* zerostable;
+		uchar* Z;
 		//uchar* R1;
 		//uchar* R2;
 		//uchar* R3;
@@ -57,6 +57,7 @@ class BitMap
 		//从buff保存的0.1串中，由index位置开始，返回后续bits位表示的
 		//数值.
 
+		u16 Zeros(u16 x){return (Z[x>>8]==8)?Z[x>>8]+Z[(uchar)x]:Z[x>>8];}
 		u64 GetBits(u64 * buff,int &index,int bits);
 	
 		//得到0的runs.
@@ -77,6 +78,9 @@ class BitMap
 
 		//返回rl0编码的串中，由index位置开始，长度位bits
 		//内的1的个数.
+		int RL_Rank(u64 * buff,int &index,int bits_num,int rl_type);
+		int RL_Rank(u64 * buff,int &index,int bits_num,int rl_type,int &bit);
+	
 		int RL0_Rank(u64 * buff,int &index,int bits_num);
 		int RL0_Bit(u64 * buff,int &index,int bits);
 		int RL0_Rank(u64 * buff,int &index,int bits,int &bit);
@@ -89,14 +93,6 @@ class BitMap
 		int Plain_Rank(u64 * buff,int &index,int bits);
 		int Plain_Bit(u64 * buff,int &index,int bits);
 		int Plain_Rank(u64 * buff,int &index,int bits,int & bit);
-
-	//	int Fixed0_Rank(u64 * buff,int &index,int bits_num);
-	//	int Fixed0_Bit(u64 * buff,int &index,int bits);
-	//	int Fixed0_Rank(u64 * buff,int &index,int bits,int &bit);
-
-	//	int Fixed1_Rank(u64 * buff,int &index,int bits_num);
-	//	int Fixed1_Bit(u64 * buff,int &index,int bits);
-	//	int Fixed1_Rank(u64 * buff,int &index,int bits,int &bit);
 
 		
 		int level;//该串的层数.

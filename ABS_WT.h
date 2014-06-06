@@ -28,7 +28,7 @@ class ABS_FM
 		int SizeInByte_count();
 	protected:
 		BitMap * root;
-		uchar * zerostable;
+		uchar * Z;
 	//	uchar * R1;//16bits表示的gamma编码的编码值的和
 	//	uchar * R2;//16bits可以完整解码的bits数
 	//	uchar * R3;//假设是1-runs时的rank值
@@ -89,6 +89,7 @@ class ABS_FM
 		int TreeSizeInByte(BitMap * r);
 	//	int TreeSizeInByte();
 		friend int GammaDecode(u64 * buff,int & index,ABS_FM * t);
+		friend int Zeros(u16 x,ABS_FM * t);
 		void Test_L();
 		void Test_Occ();
 		void Test_Shape(BitMap *);
