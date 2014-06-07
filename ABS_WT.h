@@ -59,7 +59,7 @@ class ABS_FM
 
 		int Occ(int &rank,unsigned char &label,int pos);
 		int Occ(unsigned char c,int pos);
-		//void Occ(unsigned char c,int pos_left,int pos_right,int &left,int &right);
+		void Occ(unsigned char c,int pos_left,int pos_right,int &rank_left,int &rank_right);
 		int LF(int i);
 		unsigned char L(int i);
 		void DrawBackSearch(const char * pattern,int &Left,int & Right);
@@ -93,6 +93,7 @@ class ABS_FM
 		void Test_L();
 		void Test_Occ();
 		void Test_Shape(BitMap *);
+
 
 };
 #endif

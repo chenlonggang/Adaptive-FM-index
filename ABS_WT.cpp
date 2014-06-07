@@ -35,7 +35,6 @@ ABS_FM::ABS_FM(const char * filename,int block_size,int D)
 	this->T=NULL;
 	T = Getfile(filename);
 	Inittable();
-
 }
 
 
@@ -90,6 +89,8 @@ int ABS_FM::TreeSizeInByte(BitMap * r)
 void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 {
 	int len = strlen(pattern);
+	int occ_left=0;
+	int occ_right=0;
 	if(len <=0)
 	{
 		Left =1;
@@ -118,9 +119,17 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 			Right = 0;
 			return;
 		}
-		Left = C[coding]+Occ(c,Left-1);
+	/*	
+	    Left = C[coding]+Occ(c,Left-1);
 		Right =C[coding]+Occ(c,Right)-1;
 		i=i-1;
+	*/
+		
+		Occ(c,Left-1,Right,occ_left,occ_right);
+		Left = C[coding]+occ_left;
+		Right = C[coding]+occ_right-1;
+		i=i-1;
+	
 	}
 	if(Right < Left)
 	{
@@ -210,12 +219,67 @@ int ABS_FM::Lookup(int i)
 	i=i/D;
 	return (SAL->GetValue(i)+step)%n;
 }
-/*
-void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &left,int &right)
+
+//返回L串中c字符在位置pos_left 和pos_right之前出现的次数，结果由rank_left 和rank_right带回.
+void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &rank_left,int &rank_right)
 {
+	BitMap *r = root;
+	int level=0;
+	char code = '0';
+	while(r->Left())
+	{
+		code = codeTable[c][level];
+		
+		if(code == '1')//编码是1,走右分支
+		{
+			if(pos_left>-1 && pos_right >-1) //left right 都有待查找
+			{
+				/*
+				r->Rank(pos_left,pos_right,rank_left,rank_right);
+				pos_left = rank_left -1;
+				pos_right = rank_right -1;
+				*/
+				pos_left = r->Rank(pos_left)-1;
+				pos_right=r->Rank(pos_right)-1;
+			}
+			else if(pos_right > -1)//只查右分支
+			{
+				pos_right=r->Rank(pos_right)-1;
+			}
+			else//该跳出循环了,此时pos_left 和pos_right都是-1.
+			{
+				break;
+			}
+			r= r->Right();
+		}
+		else //编码是0,走左分支.
+		{
+			if(pos_left>-1 && pos_right >-1)
+			{
+				/*
+				r->Rank(pos_left,pos_right,rank_left,rank_right);
+				pos_left = (pos_left+1) - rank_left-1;
+				pos_right= (pos_right+1)- rank_right-1;
+				*/
+				pos_left = (pos_left+1)-r->Rank(pos_left)-1;
+				pos_right= (pos_right+1)-r->Rank(pos_right)-1;
+			}
+			else if(pos_right > -1)
+			{
+				pos_right = (pos_right+1)-r->Rank(pos_right)-1;
+			}
+			else
+			{
+				break;
+			}
+			r=r->Left();
+		}
+		level++;
+	}
+	rank_left = pos_left+1;
+	rank_right= pos_right+1;
 	return ;
 }
-*/
 int ABS_FM::Occ(unsigned char c,int pos)
 {
 	BitMap * r = root;
