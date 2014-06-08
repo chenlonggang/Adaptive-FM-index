@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 *.a
 *.o
+=======
+*.o
+*.a
+>>>>>>> drawbacksearch
 *.txt
 !.gitignore

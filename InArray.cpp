@@ -1,3 +1,14 @@
+/*============================================
+# Filename: InArray.cpp
+# Ver 1.0 2014-06-08
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+=============================================*/
 #include "InArray.h"
 #include<string.h>
 #include<stdlib.h>
@@ -12,15 +23,14 @@ InArray::~InArray(void)
 InArray::InArray()
 {
 }
-//构造函数,表示有len个“整数”需要存储，每个整数的位宽为size。
-InArray::InArray(i32 len, i32 size) 
+InArray::InArray(i32 data_num, i32 data_width) 
 {
-	if(len<0||size<=0)
+	if(data_num<0||data_width<=0)
 		cout<<"InArray构造参数输入错误"<<endl;
 	else
 	{
-		this->datanum =len;
-		this->datawidth =size;
+		this->datanum =data_num;
+		this->datawidth =data_width;
 	    i64 totlesize=datanum*datawidth;
 		if(totlesize%32==0)
 			totlesize=totlesize/32+1;
@@ -81,8 +91,6 @@ i32 InArray::GetDataWidth()
 
 i32 InArray::GetValue(i32 index)
 {
-
-
 	if(index>datanum-1||index<0)
 	{
 		cerr<<"InArray:GetValue: index out of boundary"<<endl;

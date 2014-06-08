@@ -1,3 +1,14 @@
+/*============================================
+# Filename: ABS_WT.cpp
+# Ver 1.0 2014-06-08
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+=============================================*/
 #include"ABS_WT.h"
 #include"ds_ssort.h"
 #include<string.h>
@@ -13,10 +24,18 @@ u64 GetBits(u64 * buff,int &index,int bits)
 	return high + (buff[(index>>6)+1]>>(64-second));
 }
 
+int Zeros(u16 x,ABS_FM *t)
+{
+	if(t->Z[x>>8]==8)
+		return t->Z[x>>8]+t->Z[(uchar)x];
+	else
+		return t->Z[x>>8];
+}
+
 int GammaDecode(u64 * buff,int & index,ABS_FM * t)
 {
 	u32 x = GetBits(buff,index,32);
-	int runs = t->zerostable[x>>16];
+	int runs = Zeros(x>>16,t);
 	int bits = (runs<<1)+1;
 	index = index + bits;
 	return x>>(32-bits);
@@ -27,12 +46,9 @@ ABS_FM::ABS_FM(const char * filename,int block_size,int D)
 	this->block_size = block_size;
 	this->D =D;
 	this->T=NULL;
-	//read file,init C,T,alphabetsize,charMap.
 	T = Getfile(filename);
 	Inittable();
-
 }
-
 
 ABS_FM::~ABS_FM()
 {
@@ -49,23 +65,15 @@ ABS_FM::~ABS_FM()
 		delete [] C;
 	if(code)
 		delete [] code;
-	if(zerostable)
-		delete [] zerostable;
-//	if(R1)
-//		delete [] R1;
-//	if(R2)
-//		delete [] R2;
-//	if(R3)
-//		delete [] R3;
-//	if(R4)
-//		delete [] R4;
+	if(Z)
+		delete [] Z;
 	if(R)
 		delete [] R;
 }
 
 int ABS_FM::SizeInByte()
 {
-	return TreeSizeInByte(root)+ SAL->GetMemorySize() + RankL->GetMemorySize();
+	return TreeSizeInByte(root) + SAL->GetMemorySize() + RankL->GetMemorySize();
 }
 
 int ABS_FM::SizeInByte_count()
@@ -73,13 +81,14 @@ int ABS_FM::SizeInByte_count()
 	return TreeSizeInByte(root);
 }
 
-int ABS_FM::TreeNodeCount(WT_Node * r)
+int ABS_FM::TreeNodeCount(BitMap * r)
 {
 	if(r==NULL)
 		return 0;
 	return TreeNodeCount(r->Left()) + TreeNodeCount(r->Right()) + 1;
 }
-int ABS_FM::TreeSizeInByte(WT_Node * r)
+
+int ABS_FM::TreeSizeInByte(BitMap * r)
 {
 	int size = 0;
 	if(r->Left())
@@ -93,6 +102,8 @@ int ABS_FM::TreeSizeInByte(WT_Node * r)
 void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 {
 	int len = strlen(pattern);
+	int occ_left=0;
+	int occ_right=0;
 	if(len <=0)
 	{
 		Left =1;
@@ -114,7 +125,6 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 	while ((Left <= Right) and (i>=0))
 	{
 		c = pattern[i];
-		//if(!charMap[c])
 		coding = code[c];
 		if(coding == -1)
 		{
@@ -122,8 +132,14 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 			Right = 0;
 			return;
 		}
-		Left = C[coding]+Occ(c,Left-1);
+	/*	
+	    Left = C[coding]+Occ(c,Left-1);
 		Right =C[coding]+Occ(c,Right)-1;
+		i=i-1;
+	*/
+		Occ(c,Left-1,Right,occ_left,occ_right);
+		Left = C[coding]+occ_left;
+		Right = C[coding]+occ_right-1;
 		i=i-1;
 	}
 	if(Right < Left)
@@ -167,47 +183,8 @@ void ABS_FM::Locating(const char * pattern,int &num,int *& pos)
 }
 
 
-//该方法有误，需要调整Rank的采样，从
-//末端开始采样，Rank采样在BuildTree方法中.
 void ABS_FM::Extracting(int pos,int len,char * &sequence)
 {
-/*	
-	if(pos+len > n-1 || pos < 0)
-	{
-		cout<<"ABS_FM::Extracting  error parmaters"<<endl;
-		exit(0);
-	}
-	sequence = new char[len+1];
-	memset(sequence,0,(len+1)*sizeof(char));
-
-	int end = pos + len -1;
-	int anchor = 0;
-	int overloop = 0;
-
-	int step = this->D*16;
-	if((end-1) % step == 0)
-	{
-		anchor = (end-1)/step;
-		overloop =0;
-	}
-	else
-	{
-		anchor = (end-1)/step +1;
-		overloop = step * step +1 - end;
-	}
-
-	//int i = anchor*step+1;
-table = zerostable;cout<<anchor<<endl;
-	int i = RankL->GetValue(anchor);
-	for(int j=0;j<overloop;j++)
-		i = LF(i);
-	
-	for(int j=0;j<len;j++)
-	{
-		sequence[len-1-j] = L(i);
-		i = LF(i);
-	}
-*/
 	if(pos + len > n-1 || pos <0)
 	{
 		cout<<pos<<"  "<<len<<endl;
@@ -244,17 +221,77 @@ int ABS_FM::Lookup(int i)
 	while(i%D!=0)
 	{
 		i=LF(i);
-//		cout<<"LF(izerostable = zerostable;)"<<i<<endl;
 		step =step +1;
-//		cout<<i<<" "<<step<<endl;
 	}
 	i=i/D;
 	return (SAL->GetValue(i)+step)%n;
 }
 
+//返回L串中c字符在位置pos_left 和pos_right之前出现的次数，结果由rank_left 和rank_right带回.
+void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &rank_left,int &rank_right)
+{
+	BitMap *r = root;
+	int level=0;
+	char code = '0';
+	while(r->Left())
+	{
+		code = codeTable[c][level];
+		
+		if(code == '1')//编码是1,走右分支
+		{
+			if(pos_left>-1 && pos_right >-1) //left right 都有待查找
+			{
+			
+				r->Rank(pos_left,pos_right,rank_left,rank_right);
+				pos_left = rank_left -1;
+				pos_right = rank_right -1;
+			
+			/*	pos_left = r->Rank(pos_left)-1;
+				pos_right=r->Rank(pos_right)-1;
+			*/
+			}
+			else if(pos_right > -1)//只查右分支
+			{
+				pos_right=r->Rank(pos_right)-1;
+			}
+			else//该跳出循环了,此时pos_left 和pos_right都是-1.
+			{
+				break;
+			}
+			r= r->Right();
+		}
+		else //编码是0,走左分支.
+		{
+			if(pos_left>-1 && pos_right >-1)
+			{
+				
+				r->Rank(pos_left,pos_right,rank_left,rank_right);
+				pos_left = (pos_left+1) - rank_left-1;
+				pos_right= (pos_right+1)- rank_right-1;
+			/*
+				pos_left = (pos_left+1)-r->Rank(pos_left)-1;
+				pos_right= (pos_right+1)-r->Rank(pos_right)-1;
+			*/
+			}
+			else if(pos_right > -1)
+			{
+				pos_right = (pos_right+1)-r->Rank(pos_right)-1;
+			}
+			else
+			{
+				break;
+			}
+			r=r->Left();
+		}
+		level++;
+	}
+	rank_left = pos_left+1;
+	rank_right= pos_right+1;
+	return ;
+}
 int ABS_FM::Occ(unsigned char c,int pos)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int level = 0;
 	char code ='0';
 	while(r->Left() && pos > -1)
@@ -296,11 +333,11 @@ int ABS_FM::LF(int i)
 
 unsigned char ABS_FM::L(int i)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int bit =0;
 	int rank = 0;
 
-/*	//Bit(i)和Rank(i)可以在一步内计算出来，可以减少一次检索WT_Node的功夫.
+/*	//Bit(i)和Rank(i)可以在一步内计算出来，可以减少一次检索BitMap的功夫.
 	while(r->Left() || r->Right())
 	{
 		//bit = r->GetBit(data,i);
@@ -344,7 +381,7 @@ unsigned char ABS_FM::L(int i)
 
 int ABS_FM::Occ(int & occ , unsigned char & label,int pos)
 {
-	WT_Node * r = root;
+	BitMap * r = root;
 	int bit =0;
 	int rank =0;
 	while(r->Left())
@@ -388,7 +425,7 @@ unsigned char * ABS_FM::Getfile(const char *filename)
 	while((e=fread(T+num,sizeof(uchar),n-1-num,fp))!=0)
 		num = num +e;
 	if(num!=n-1)
-	{zerostable = zerostable;
+	{
 		cout<<"Read source file failed"<<endl;
 		exit(0);
 	}
@@ -401,7 +438,7 @@ unsigned char * ABS_FM::Getfile(const char *filename)
 		charFreq[T[i]]++;
 	this->alphabetsize = 0;
 	for(i32 i=0;i<256;i++)
-		if(charFreq[i]!=0)
+		if(charFreq[i])
 		{
 			this->alphabetsize++;
 			this->charMap[i]=true;
@@ -444,8 +481,6 @@ int ABS_FM::BWT(unsigned char *T,int * SA,unsigned char * bwt,int len)
 
 int ABS_FM::BuildTree()
 {
-//	T = Getfile(filename);
-//	Inittable();
 	int *SA = new int[n];
 	ds_ssort(T,SA,n);	
 	
@@ -491,7 +526,7 @@ int ABS_FM::BuildTree()
 	return 0;
 }
 
-void ABS_FM::Test_Shape(WT_Node * r)
+void ABS_FM::Test_Shape(BitMap * r)
 {
 	if(r->Left() && r->Right())
 	{
@@ -524,8 +559,6 @@ void ABS_FM::Test_Occ()
 
 }
 
-
-
 void ABS_FM::Test_L()
 {
 	int mis=0;
@@ -541,9 +574,9 @@ void ABS_FM::Test_L()
 }
 
 
-WT_Node * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
+BitMap * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
 {
-	WT_Node * root = NULL;
+	BitMap * root = NULL;
 
 	root = FullFillWTNode(bwt,n,0);
 	if(!root)
@@ -555,7 +588,7 @@ WT_Node * ABS_FM::CreateWaveletTree(unsigned char * bwt,int n)
 }
 
 
-WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
+BitMap * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 {
 //	cout<<level<<endl;
 	int CurrentLevel = level;
@@ -567,8 +600,8 @@ WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 		CurrentLabel = buff[0];
 		CurrentBitBuff = NULL;
 		//uchar * tables[5]={this->zerostable,this->R1,this->R2,this->R3,this->R4};
-		uchar * tables[2] ={this->zerostable,this->R};
-		WT_Node * node = new WT_Node(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
+		uchar * tables[2] ={this->Z,this->R};
+		BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 		node->Left(NULL);
 		node->Right(NULL);
 		return node;
@@ -623,19 +656,19 @@ WT_Node * ABS_FM::FullFillWTNode(unsigned char * buff,int len,int level)
 	CurrentBitBuff[bytePos] |= (last<<(63-bitOffset));
 
 	//uchar * tables[5] = {this->zerostable,this->R1,this->R2,this->R3,this->R4};
-	uchar * tables[2] = {this->zerostable,this->R};
-	WT_Node * node = new WT_Node(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
+	uchar * tables[2] = {this->Z,this->R};
+	BitMap * node = new BitMap(CurrentBitBuff,CurrentBitLen,CurrentLevel,block_size,CurrentLabel,tables);
 
 	if(leftLen !=0)
 	{
-		WT_Node * left =FullFillWTNode(lptr,leftLen,level+1);
+		BitMap * left =FullFillWTNode(lptr,leftLen,level+1);
 		node->Left(left);
 		delete [] lptr;
 		lptr=NULL;
 	}
 	if(rightLen!=0)
 	{
-		WT_Node * right = FullFillWTNode(rptr,rightLen,level+1);
+		BitMap * right = FullFillWTNode(rptr,rightLen,level+1);
 		node->Right(right);
 		delete [] rptr;
 		rptr=NULL;
@@ -666,18 +699,14 @@ int ABS_FM::blog(int x)
 
 void ABS_FM::Inittable()
 {
-	this -> zerostable = new uchar[1<<16];
-	int tablewidth = 16;
+	this -> Z = new uchar[1<<8];
+	int tablewidth = 8;
 	for(int i=0;i<tablewidth;i++)
 		for(int j=(1<<i);j<(2<<i);j++)
-			zerostable[j] = tablewidth-1-i;
-	zerostable[0] = tablewidth;
+			Z[j] = tablewidth-1-i;
+	Z[0] = tablewidth;
 	
 	u64 tablesize = (1<<16);
-//	R1 = new uchar[tablesize];
-//	R2 = new uchar[tablesize];
-//	R3 = new uchar[tablesize];
-//	R4 = new uchar[tablesize];
 	R  = new uchar[tablesize<<2];
 	
 	//查找表的初始化：在16bits的0,1串上模拟gamma解码的过程，得到
@@ -693,7 +722,6 @@ void ABS_FM::Inittable()
 	for(u64 i=0;i<tablesize;i++)
 	{
 		B[0] = (i<<48);
-//		B[0] =B[0] + (0x01ull<<48)-1;
 		sum  =0 ;
 		step = 0;
 		prestep=0;
@@ -702,7 +730,6 @@ void ABS_FM::Inittable()
 		while(1)
 		{
 			x = GammaDecode(B,step,this);//step会联动.
-		//	cout<<x<<endl;
 			if(step > 16)
 				break;
 			sum = sum + x;
@@ -711,10 +738,6 @@ void ABS_FM::Inittable()
 			if(runs%2==1)
 				rank = rank + x;
 		}
-		//R1[i] = sum;
-		//R2[i] = prestep;
-		//R3[i] = rank;
-		//R4[i] = runs;
 		R[i<<2] = runs;//r4
 		R[(i<<2)+1] = prestep;//r2
 		R[(i<<2)+2] = sum; //r1;
@@ -724,7 +747,7 @@ void ABS_FM::Inittable()
 }
 
 //递归保存节点的编号信息
-int ABS_FM::SaveNodePosition(WT_Node * r,u32 position,savekit &s)
+int ABS_FM::SaveNodePosition(BitMap * r,u32 position,savekit &s)
 {
 	if(!r)
 		return 1;
@@ -735,7 +758,7 @@ int ABS_FM::SaveNodePosition(WT_Node * r,u32 position,savekit &s)
 }
 
 //递归保存节点的数据信息
-int ABS_FM::SaveNodeData(WT_Node *r,savekit &s)
+int ABS_FM::SaveNodeData(BitMap *r,savekit &s)
 {
 	if(!r)
 		return 1 ;
@@ -765,14 +788,14 @@ int ABS_FM::LoadWTTree(loadkit &s,uchar **tables)
 //	s.loadi32(nodecount);
 	int * p = new int[nodecount];
 	s.loadi32array(p,nodecount);
-	map<int,WT_Node * > pmap;
-	WT_Node * r=NULL;
+	map<int,BitMap * > pmap;
+	BitMap * r=NULL;
 	for(int i=0;i<nodecount;i++)
 	{
 		if(tables)
-			r = new WT_Node(tables);
+			r = new BitMap(tables);
 		else
-			r = new WT_Node();
+			r = new BitMap();
 		r->Load(s);
 		pmap[p[i]] = r;
 	}
@@ -780,8 +803,8 @@ int ABS_FM::LoadWTTree(loadkit &s,uchar **tables)
 //	cout<<"748"<<endl;
 
 	//挂链
-	map<int ,WT_Node *>::iterator iter;
-	map<int ,WT_Node *>::iterator f_iter;
+	map<int ,BitMap *>::iterator iter;
+	map<int ,BitMap *>::iterator f_iter;
 	for(iter = pmap.begin();iter!=pmap.end();iter++)
 	{
 		f_iter = pmap.find(2*iter->first);
@@ -857,11 +880,9 @@ int ABS_FM::Load(loadkit &s)
 	//for Rankl
 	this->RankL = new InArray();
 	this->RankL->load(s);
-	//for lookup tables
-//	this->zerostable = new uchar[1<<16];
-//	this->R=new uchar[(1<<16)*4];
+
 	Inittable();
-	uchar * par[2]={zerostable,R};
+	uchar * par[2]={Z,R};
 	//cout<<"cs"<<endl;
 	LoadWTTree(s,par);
 //	cout<<"835"<<endl;

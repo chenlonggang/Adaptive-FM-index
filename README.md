@@ -61,3 +61,51 @@
 		return 0;
 	}
 	```
+
+##ChangeLog
+2014.5.25:   
+Use the LookupTables,and cross them,it looks helpful,count works faster about 25~35%.  
+
+2014.5.27:   
+If gamma coding don't save much space,only very few,using plain first.it helps,not very significant.  
+
+2014.5.28:   
+Complete the copy constructor,assigment operator,for class FM by using UseCount Tec. It seems WT-Node is not a good name,BitMap is better.  
+
+2014.5.30:  
+Want to computer from head or tail,depending which points is good,working on it Now!
+
+2014.6.1:  
+It seems that Rank(int pos) works now,and the answer seems right.That's good!. Now working on Rank(int pos,int &bit).
+And change rename 'WT-Node' to BitMap    
+
+2014.6.2:  
+Computer Rank from head or tail adaptivly, but the result is not good,this may be a result of expanded lookuptables,or bit-reverse function.
+So we can drop the drawback-lookup tables,and drop the bit-reverse function,only holds:forward-lookuptables and reverse-table,this will reduce
+space of tables,and bit-reverse can use the reverse-table,so it's may be faster.working on it!  
+
+2014.6.3  
+It does not work to drop backforward-lookup tables and bit-reverse function,So,expanded lookuptables and bit-reverse function is not the suspect of
+fading performance  
+
+2014.6.4  
+After a long time thinking,it's no need to use reverse-function or reverse-tables. we can map all the gamma value to odd numbers,so the lowest bit will be 1,
+and it can denote the boundary. The mapping function: f(x)=x+x-1 or f(x)=x+x-3 or f(x) = x+x-5...  
+
+2014.6.6:  
+Rank from head or tail will not save time for any kind of document.if the file is random-like file,the needed block should be small,in this situation,from 
+both points will not help,because time used for decoding is not very significant,and time for prepare-operations will increase.for highly-repetive data the runs
+are big,the decoding process is good enough,for example,if the block-size is 1024,the runs will be hundreds,so only a few decoding steps is needed.In this situation,
+form both points will not help too.So let it go,bye!
+	
+2014.6.6:  
+drawbacksearch function has the potential to works faster.Woking on it  
+
+2014.6.8:  
+speed up drawbacksearch works,count works about 25-35% faster for normal-data and random-data,  
+not sigificant for highly-repetive data.  
+
+2014.6.8:  
+Now working on clean and rearrange the code.and working on data-aware feature.
+
+

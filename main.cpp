@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<sys/time.h>
 #include"FM.h"
 #include<iostream>
 using namespace std;
@@ -54,63 +55,27 @@ int main(int argc,char ** argvs)
 		{
 			int x = rand()%( n - 50);
 			fm.Extracting(x,20,p[i]);
-//			cout<<p[i]<<endl;
 		}
 		cout<<"pattern is ready"<<endl;
 
 		double totnum =0;
 		int num = 0;
-		time_t t1 =clock();
+
+		struct timeval start;
+		struct timeval end;
+		gettimeofday(&start,NULL);
+
 		for(int i=0;i<times;i++)
 		{
 			fm.Counting(p[i],num);
 			totnum = totnum + num;
 		}
-		time_t t2 =clock();
-		cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+
+		gettimeofday(&end,NULL);
+		//time_t t2 =clock();
+		//cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+		cout<<"count-time: "<<((end.tv_sec-start.tv_sec)*1000000.0+end.tv_usec - start.tv_usec)/times<<endl;
 		cout<<"avera-nums: "<<totnum/times<<endl;
-		cout<<"totnum :"<<totnum<<endl;
-
-/*
-
-		time_t t5 = clock();
-		int * pos=NULL;
-		char temp[21]={'\0'};
-		for(int i=0;i<times;i++)
-		{
-			fm.Locating(p[i],num,pos);
-
-			delete [] pos;
-		}
-		time_t t6 = clock();
-		cout<<"locat-time: "<<(t6-t5)/1000000.0<<endl;
-*/		
-//		cout<<n<<endl;
-/*
-		char * pp =new  char[n];
-		memset(pp,0,n);
-		fm.Extracting(0,n,pp);
-		for(int i=0;i<n;i++)
-			cout<<pp[i];
-*/		
-
-		// for Save and Load
-/*		fm.Save("fm.index");
-		cout<<"Save is ok"<<endl;
-		FM fm1;
-		fm1.Load("fm.index");
-		cout<<"fm1 is load ok"<<endl;
-		fm1.Counting("the",num);
-		cout<<num<<endl;
-		char  s[21]={'\0'};
-		fm1.Extracting(0,20,s);
-		cout<<s<<endl;
-		int * sa;
-		fm1.Locating("the",num,sa);
-		for(int i=0;i<10;i++)
-			cout<<sa[i]<<endl;
-*/
-
 		return 0;
 	}
 
