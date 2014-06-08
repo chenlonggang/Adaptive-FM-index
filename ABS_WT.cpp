@@ -20,6 +20,7 @@ int Zeros(u16 x,ABS_FM *t)
 	else
 		return t->Z[x>>8];
 }
+
 int GammaDecode(u64 * buff,int & index,ABS_FM * t)
 {
 	u32 x = GetBits(buff,index,32);
@@ -28,6 +29,7 @@ int GammaDecode(u64 * buff,int & index,ABS_FM * t)
 	index = index + bits;
 	return x>>(32-bits);
 }
+
 ABS_FM::ABS_FM(const char * filename,int block_size,int D)
 {
 	this->block_size = block_size;
@@ -36,7 +38,6 @@ ABS_FM::ABS_FM(const char * filename,int block_size,int D)
 	T = Getfile(filename);
 	Inittable();
 }
-
 
 ABS_FM::~ABS_FM()
 {
@@ -75,6 +76,7 @@ int ABS_FM::TreeNodeCount(BitMap * r)
 		return 0;
 	return TreeNodeCount(r->Left()) + TreeNodeCount(r->Right()) + 1;
 }
+
 int ABS_FM::TreeSizeInByte(BitMap * r)
 {
 	int size = 0;
@@ -124,12 +126,10 @@ void ABS_FM::DrawBackSearch(const char * pattern,int & Left,int &Right)
 		Right =C[coding]+Occ(c,Right)-1;
 		i=i-1;
 	*/
-		
 		Occ(c,Left-1,Right,occ_left,occ_right);
 		Left = C[coding]+occ_left;
 		Right = C[coding]+occ_right-1;
 		i=i-1;
-	
 	}
 	if(Right < Left)
 	{
@@ -172,8 +172,6 @@ void ABS_FM::Locating(const char * pattern,int &num,int *& pos)
 }
 
 
-//该方法有误，需要调整Rank的采样，从
-//末端开始采样，Rank采样在BuildTree方法中.
 void ABS_FM::Extracting(int pos,int len,char * &sequence)
 {
 	if(pos + len > n-1 || pos <0)
@@ -212,9 +210,7 @@ int ABS_FM::Lookup(int i)
 	while(i%D!=0)
 	{
 		i=LF(i);
-//		cout<<"LF(izerostable = zerostable;)"<<i<<endl;
 		step =step +1;
-//		cout<<i<<" "<<step<<endl;
 	}
 	i=i/D;
 	return (SAL->GetValue(i)+step)%n;
@@ -234,13 +230,14 @@ void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &rank_left,int &
 		{
 			if(pos_left>-1 && pos_right >-1) //left right 都有待查找
 			{
-				/*
+			
 				r->Rank(pos_left,pos_right,rank_left,rank_right);
 				pos_left = rank_left -1;
 				pos_right = rank_right -1;
-				*/
-				pos_left = r->Rank(pos_left)-1;
+			
+			/*	pos_left = r->Rank(pos_left)-1;
 				pos_right=r->Rank(pos_right)-1;
+			*/
 			}
 			else if(pos_right > -1)//只查右分支
 			{
@@ -256,13 +253,14 @@ void ABS_FM::Occ(unsigned char c,int pos_left,int pos_right,int &rank_left,int &
 		{
 			if(pos_left>-1 && pos_right >-1)
 			{
-				/*
+				
 				r->Rank(pos_left,pos_right,rank_left,rank_right);
 				pos_left = (pos_left+1) - rank_left-1;
 				pos_right= (pos_right+1)- rank_right-1;
-				*/
+			/*
 				pos_left = (pos_left+1)-r->Rank(pos_left)-1;
 				pos_right= (pos_right+1)-r->Rank(pos_right)-1;
+			*/
 			}
 			else if(pos_right > -1)
 			{

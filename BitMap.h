@@ -23,6 +23,7 @@ class BitMap
 
 		int Rank(int pos);
 		int Rank(int pos,int &bit);
+		void Rank(int pos_left,int pos_right,int &rank_left,int &rank_right);
 
 
 		void Left(BitMap * left);
@@ -78,8 +79,9 @@ class BitMap
 
 		//返回rl0编码的串中，由index位置开始，长度位bits
 		//内的1的个数.
-		int RL_Rank(u64 * buff,int &index,int bits_num,int rl_type);
-		int RL_Rank(u64 * buff,int &index,int bits_num,int rl_type,int &bit);
+		void RL_Rank(u64 * buff,int &index,int bits_left,int bits_right,int &rank_left,int &rank_right,int rl_type);
+		int  RL_Rank(u64 * buff,int &index,int bits_num,int rl_type);
+		int  RL_Rank(u64 * buff,int &index,int bits_num,int rl_type,int &bit);
 	
 		int RL0_Rank(u64 * buff,int &index,int bits_num);
 		int RL0_Bit(u64 * buff,int &index,int bits);
@@ -90,6 +92,7 @@ class BitMap
 		int RL1_Rank(u64 * buff,int &index,int bits,int &bit);
 		//buff从index位置开始是直接存储的，从index位置开始，bits
 		//位内有几个1.
+		void Plain_Rank(u64 *buff,int &index,int bits_left,int bits_right,int &rank_left,int&rank_right);
 		int Plain_Rank(u64 * buff,int &index,int bits);
 		int Plain_Bit(u64 * buff,int &index,int bits);
 		int Plain_Rank(u64 * buff,int &index,int bits,int & bit);

@@ -74,49 +74,27 @@ void BitMap::Coding()
 		u64Len = bitLen/64;
 	else
 		u64Len = bitLen/64+1;
-	
-	//用来缓存编码的地方
 	u64 * temp = new u64[u64Len];
 	memset(temp,0,u64Len*8);
-	//用来表示编码进程，即编码到index bit了。
+	
 	int index = 0;
-	//编码后的大小
-	int space=0;
-	//超快大小，单位bit
 	int step1 = block_size*16;
-	//块大小，单位bit
 	int step2 = block_size;
-	int block_width = blog(block_size);
+	//int block_width = blog(block_size);
 	superblock = new InArray(2*(bitLen/step1)+2,blog(bitLen));
 	block      = new InArray(2*(bitLen/step2)+2,blog(step1-step2));
 	coding_style      = new InArray(bitLen/step2+1,3);
 
-	//超快rank
-	//int super_rank=0;
-	//块rank
 	int rank=0;
-	//一个块内，已处理的bits数。
+	int space=0;
 	int bits =0;
-	//一个块内开始的第一个bit，这决定这编码方案，important.
 	int firstbit;
-	//某个块用gamma编码编码的大小，单位bit。
 	int rl_g=0;
-	int rl_f=0;
-	//某个块用plain方案编码的大小，固定的.
-//	int plain_size = block_size;
-	//游程长度.
 	int runs = 0;
-	//标示这个游程是关于1的，还是0的
 	int bit=0;
-	//保存游程的临时数组，最多block_size个，此时0,1交替出现.
 	int * runs_tmp = new int[block_size];
 	int k=0;
-
-	//temp的索引
 	int index2=0;
-
-	//前一个superblock的offset.
-	//int pre_superblock_offset = 0;
 	
 	int pre_rank=0;
 	int pre_space =0 ;
@@ -129,7 +107,6 @@ void BitMap::Coding()
 		if(index == bitLen)
 			break;
 		rl_g = 0;
-		rl_f = 0;
 		bits = 0;
 		firstbit = 0;
 		runs = 0;
@@ -141,7 +118,6 @@ void BitMap::Coding()
 		{
 
 			runs = GetRuns(data,index,bit);
-//			rl_gamma_size +=2*blog(runs)-1;
 			bits = bits +runs;
 			if(bit ==1)
 				rank=rank+runs;
@@ -154,28 +130,17 @@ void BitMap::Coding()
 			int step =0;
 			index = index -(bits - block_size);
 			step = block_size+runs-bits;
-//			rl_gamma_size = rl_gamma_size-(2*blog(runs)-1)+2*blog(step)-1;
-			if(bit ==1)//rank要修改
+			if(bit ==1)
 				rank = rank -runs+step;
 			runs_tmp[k-1] = step;
 		}
 
-
 		for(int i=0;i<k;i++)
 			rl_g = rl_g + 2*blog(runs_tmp[i])-1;
-		rl_f = k * block_width;
-
-
-/*		for(int i=0;i<max(0,k-2);i++)
-			rl_g = rl_g + 2*blog(runs_tmp[i])-1;
-		rl_f = max(0,k-2) * block_width;
-*/
-
 
 		int thred=20;
-		int len = min(rl_g,min(rl_f,block_size-thred));
+		int len = min(rl_g,block_size-thred);
 
-		
 		if(k==1)
 		{
 			if(firstbit==0)
@@ -254,8 +219,6 @@ void BitMap::Coding()
 
 }
 
-
-
 BitMap::~BitMap()
 {
 	if(left)
@@ -269,7 +232,6 @@ BitMap::~BitMap()
 }
 
 
-
 int BitMap::Rank(int pos,int & bit)
 {
 	if(pos < 0 || pos > bitLen)
@@ -281,7 +243,7 @@ int BitMap::Rank(int pos,int & bit)
 	{
 		int block_anchor = (pos+1)/block_size;
 		int superblock_anchor = (pos+1)/super_block_size;
-		int type = coding_style->GetValue(pos/block_size);
+		int type =  coding_style->GetValue(pos/block_size);
 		int rank1 = superblock->GetValue(superblock_anchor*2);
 		int offset1 = superblock->GetValue(superblock_anchor*2+1);
 		int rank_base = rank1+block->GetValue(block_anchor*2);
@@ -325,6 +287,59 @@ int BitMap::Rank(int pos,int & bit)
 }
 
 
+void BitMap::Rank(int pos_left,int pos_right,int &rank_left,int &rank_right)
+{
+/*	
+	rank_left= Rank(pos_left);
+	rank_right=Rank(pos_right);
+*/
+	
+	if(pos_left<0 || pos_right <0 || pos_left > bitLen || pos_right > bitLen)
+	{
+		cerr<<"BitMap::Rank(int,int,int&,int&) error parmater"<<endl;
+		exit(0);
+	}
+	int block_anchor = (pos_left+1)/block_size;
+	if(block_anchor==(pos_right+1)/block_size)
+	{
+		int superblock_anchor=(pos_left+1)/super_block_size;
+		int rank_base = superblock->GetValue(superblock_anchor<<1)+block->GetValue(block_anchor<<1);
+		int offset = superblock->GetValue((superblock_anchor<<1)+1)+block->GetValue((block_anchor<<1)+1);
+		int type = coding_style->GetValue(block_anchor);
+		int overloop_left = (pos_left+1)%block_size;
+		int overloop_right= (pos_right+1)%block_size;
+		buff = data+ (offset>>6);
+		int index = (offset&0x3f);
+		rank_left = rank_right =rank_base;
+		if(overloop_left!=0)
+		{
+			switch(type)
+			{
+				case 0:RL_Rank(buff,index,overloop_left,overloop_right,rank_left,rank_right,0);break;
+				case 1:RL_Rank(buff,index,overloop_left,overloop_right,rank_left,rank_right,1);break;
+				case 2:Plain_Rank(buff,index,overloop_left,overloop_right,rank_left,rank_right);break;
+				case 3:break;
+				case 4:rank_left +=overloop_left;rank_right += overloop_right;break;
+			}
+			return ;
+		}
+		switch(type)
+		{   
+			case 0:rank_right += RL_Rank(buff,index,overloop_right,0);break;
+			case 1:rank_right += RL_Rank(buff,index,overloop_right,1);break;
+			case 2:rank_right += Plain_Rank(buff,index,overloop_right);break;
+			case 3:break;
+			case 4:rank_right += overloop_right;break;
+		}
+	}
+	else
+	{
+		rank_left= Rank(pos_left);
+		rank_right=Rank(pos_right);
+	}
+
+}
+
 
 int BitMap::Rank(int pos)
 {
@@ -336,9 +351,9 @@ int BitMap::Rank(int pos)
 	}
 
 	int block_anchor = (pos+1)/block_size;
-	int superblock_anchor = (pos+1)/super_block_size;
-	int type = coding_style->GetValue(pos/block_size);
-
+	int superblock_anchor  = ((pos+1)/super_block_size);
+	int type = coding_style->GetValue(block_anchor);
+	
 	int rank1 = superblock->GetValue(superblock_anchor<<1);
 	int offset1 = superblock->GetValue((superblock_anchor<<1)+1);
 	int rank_base = rank1 + block->GetValue(block_anchor<<1);
@@ -529,6 +544,27 @@ int BitMap::RL1_Bit(u64 * buff,int &index,int bits_num)
 			 return 0;
 	}
 }
+
+
+//palin类型的比例较低，所以两种方式的区别不大.
+void BitMap::Plain_Rank(u64 *buff,int &index,int bits_left,int bits_right,int & rank_left,int &rank_right)
+{
+	
+	int rank = Plain_Rank(buff,index,bits_left);
+	rank_left += rank;
+	index++;
+	buff = buff +(index>>6);
+	index = (index &0x3f);
+	rank_right+= (Plain_Rank(buff,index,bits_right-bits_left)+rank);
+
+/*	
+   rank_left += Plain_Rank(buff,index,bits_left);
+   index = index +1 - bits_left;
+   rank_right+= Plain_Rank(buff,index,bits_right);
+  */
+
+}
+
 
 int BitMap::Plain_Rank(u64 * buff,int &index,int bits_num,int &bit)
 {
@@ -795,4 +831,12 @@ int BitMap::RL_Rank(u64 * buff,int &index,int bits_num,int rl_type,int &bit)
 		runs_num++;
 		x=(x<<step);
 	}
+}
+
+void BitMap::RL_Rank(u64 *buff,int &index,int bits_left,int bits_right,int &rank_left,int &rank_right,int rl_type)
+{
+	int old_index = index;
+	rank_left+=RL_Rank(buff,old_index,bits_left,rl_type);
+	//index = old_index;
+	rank_right+=RL_Rank(buff,index,bits_right,rl_type);
 }
