@@ -45,8 +45,9 @@ int main(int argc,char ** argvs)
 		time_t t3 = clock();
 		FM fm(argvs[1]);
 		time_t t4 = clock();
+		cout<<argvs[1]<<endl;
 		cout<<"build time: "<<(t4-t3)/1000000.0<<endl;
-		cout<<"fm is ready"<<endl;
+		//cout<<"fm is ready"<<endl;
 		int n =fm.GetN();
 		int size = fm.SizeInByte_count();
 		cout<<"szie "<<size/(n*1.0)<<endl;
@@ -57,7 +58,7 @@ int main(int argc,char ** argvs)
 			fm.Extracting(x,20,p[i]);
 			//cout<<p[i]<<endl;
 		}
-		cout<<"pattern is ready"<<endl;
+		//cout<<"pattern is ready"<<endl;
 
 		double totnum =0;
 		int num = 0;
@@ -72,9 +73,10 @@ int main(int argc,char ** argvs)
 		}
 		gettimeofday(&end,NULL);
 		//time_t t2 =clock();
-		//cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
+		///cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
 		cout<<"count-time: "<<((end.tv_sec-start.tv_sec)*1000000.0+end.tv_usec - start.tv_usec)/times<<endl;
 		cout<<"avera-nums: "<<totnum/times<<endl;
+	
 
 /*
 

@@ -506,8 +506,21 @@ int ABS_FM::BuildTree()
 	}
 
 	bwt = new unsigned char[n];
-
 	BWT(T,SA,bwt,n);
+	
+	double runs=0.0;
+	for(int i=0;i<n-1;i++)
+		if(bwt[i]!=bwt[i+1])
+			runs++;
+	runs=n/runs;
+	if(runs<5)
+		block_size=block_size*1;
+	else if(runs<20)
+		block_size=block_size*2;
+	else
+		block_size=block_size*4;
+	
+	cout<<"block_size: "<<block_size<<endl;
 	TreeCode();
 	root=CreateWaveletTree(bwt,n);
 //	cout<<"CreatWaveletTree"<<endl;
