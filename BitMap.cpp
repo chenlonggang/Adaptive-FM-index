@@ -1,3 +1,14 @@
+/*============================================
+# Filename: BitMap.cpp
+# Ver 1.0 2014-06-08
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+=============================================*/
 #include"BitMap.h"
 #include<math.h>
 #include<iostream>
@@ -835,8 +846,127 @@ int BitMap::RL_Rank(u64 * buff,int &index,int bits_num,int rl_type,int &bit)
 
 void BitMap::RL_Rank(u64 *buff,int &index,int bits_left,int bits_right,int &rank_left,int &rank_right,int rl_type)
 {
+/*	
 	int old_index = index;
 	rank_left+=RL_Rank(buff,old_index,bits_left,rl_type);
 	//index = old_index;
 	rank_right+=RL_Rank(buff,index,bits_right,rl_type);
+*/
+	
+	int rank = 0;//记录到解码位置的rank值
+	//int rank_diff = 0;//记录left-right之间的rank值
+	int r = 0;
+	int already = 0;
+	u64 x=GetBits(buff,index,64);
+	int bits = 0;//通过查找表可以解码的0.1的长度
+	int step = 0;//16位查找表可以解码的bit数
+	int runs = 0;
+	int runs_num = 0;
+	u32 anchor = 0;
+	bool left=true;//左rank还有待查找
+	rl_type = 1-rl_type;
+
+	while(true)
+	{
+		anchor = (x>>48)<<2;
+		runs = R[anchor];
+		if(runs>0)
+		{
+			step = R[anchor+1];
+			already = already + step;
+			if(already > 64)
+			{
+				index = index + (already - step);
+				x = GetBits(buff,index,64);
+				already = 0;
+				continue;
+			}
+
+			bits = R[anchor+2];
+			r = R[anchor+3];
+			bits =(bits==0)?256:bits;
+			if((runs_num & 0x01)==rl_type)
+				rank  = rank + r;
+			else
+				rank = rank + (bits-r);
+
+			bits_left = bits_left - bits;//对于左，右，bits数都要减少
+			bits_right = bits_right- bits;
+			runs_num = runs_num + runs;
+			
+			if(bits_left <= 0)
+				break;
+			x = (x<<step);
+		}
+		else
+		{
+			step = 1 + (Zeros(x>>48)<<1);
+			already = already + step;
+			if(already > 64)
+			{
+				index = index + (already - step);
+				x = GetBits(buff,index,64);
+				step = 1 + (Zeros(x>>48)<<1);
+				already  = step;
+			}
+			bits = (x>>(64-step));
+			bits_left = bits_left - bits;
+			bits_right = bits_right - bits;
+			r = bits;
+			if((runs_num & 0x01)==rl_type)
+				rank = rank + bits;
+			runs = 1;
+			runs_num += runs;
+			if(bits_left <=0)
+				break;
+			x = (x<<step);
+		}
+	}
+	index = index + (already  - step);
+	bits_left = bits_left + bits;
+	bits_right= bits_right+ bits;
+	runs_num = runs_num - runs;
+	if((runs_num & 0x01)==rl_type)
+		rank = rank - r;
+	else
+		rank = rank - (bits -r );
+	already = 0;
+	x = GetBits(buff,index,64);
+
+	while(true)
+	{
+		step = 1 + (Zeros(x>>48)<<1);
+		already  = already + step;
+		if(already > 64)
+		{
+			index = index + (already - step);
+			x = GetBits(buff,index,64);
+			step = 1 + (Zeros(x>>48)<<1);
+			already = step;
+		}
+		bits  = (x>>(64-step));
+		bits_left = bits_left - bits;
+		bits_right= bits_right- bits;
+		if((runs_num & 0x01)==rl_type)
+			rank = rank + bits;
+		if(left && bits_left <=0)
+		{
+			if((runs_num & 0x01)==rl_type)
+				rank_left += (rank + bits_left);
+			else
+				rank_left += rank;
+			left = false;//左rank以完成
+		}
+
+		if(bits_right <=0)
+		{
+			if((runs_num & 0x01)==rl_type)
+				rank_right += (rank + bits_right);
+			else
+				rank_right += rank;
+			return ;
+		}
+		runs_num++;
+		x=(x<<step);
+	}
 }

@@ -1,15 +1,24 @@
+/*============================================
+# Filename: InArray.h
+# Ver 1.0 2014-06-08
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description:A simple int-vector,data_width bits each cell
+=============================================*/
 #ifndef _Inarray
 #define _Inarray
 #include"BaseClass.h"
 #include"savekit.h"
 #include"loadkit.h"
-//本类表示一个有len个整数组成的数组，每个数组元素的大小为size位。若存入数组中的值的范围为0~len-1，则
-//size 的大小为log(len)，若数据范围为1~len，则size的大小为log(len)+1。本类默认的数组下标从0开始。
 class InArray
 {
 public:
 	InArray();
-	InArray(i32 len,i32 size);
+	InArray(i32 data_num,i32 data_width);
 	~InArray(void);
 	i32 GetValue(i32 index);
 	void SetValue(i32 index,i32 value);

@@ -1,3 +1,16 @@
+/*============================================
+# Filename: ABS_WT.h
+# Ver 1.0 2014-06-08
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+  Abstract class for FM-index.the datamember root denotes
+  the root bitmap of the tree.
+=============================================*/
 #ifndef ABS_FM_H
 #define ABS_FM_H
 #define CHAR_SET_SIZE 256
@@ -29,10 +42,6 @@ class ABS_FM
 	protected:
 		BitMap * root;
 		uchar * Z;
-	//	uchar * R1;//16bits表示的gamma编码的编码值的和
-	//	uchar * R2;//16bits可以完整解码的bits数
-	//	uchar * R3;//假设是1-runs时的rank值
-	//	uchar * R4;//runs数目
 	 	uchar * R;
 
 		void Inittable();
@@ -66,9 +75,6 @@ class ABS_FM
 		int Lookup(int i);
 
 		virtual int TreeCode(){return -1;};
-		//每种树形只有TreeCode方法不一样.
-		//该方法创建编码表，即初始化codeTable表，之后
-		//BuildTree方法利用该标创建小波树.
 
 		int BWT(unsigned char * T,int * SA,unsigned char * bwt,int n);
 		BitMap * CreateWaveletTree(unsigned char * bwt,int n);
@@ -77,8 +83,6 @@ class ABS_FM
 		int blog(int);
 		unsigned char * Getfile(const char * filename);
 
-		//只保存小波树该有的东西,不包快查找表
-		//保存查找表是ABS_WT类的save的工作
 		int SaveNodePosition(BitMap *,u32, savekit &);
 		int SaveNodeData(BitMap *,savekit &s);
 		int SaveWTTree(savekit & s);
