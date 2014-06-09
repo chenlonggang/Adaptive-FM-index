@@ -513,7 +513,7 @@ int ABS_FM::BuildTree()
 		if(bwt[i]!=bwt[i+1])
 			runs++;
 	runs=n/runs;
-	if(runs<5)
+	if(runs<4)
 		block_size=block_size*1;
 	else if(runs<20)
 		block_size=block_size*2;

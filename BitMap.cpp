@@ -245,9 +245,11 @@ BitMap::~BitMap()
 
 int BitMap::Rank(int pos,int & bit)
 {
+	
 	if(pos < 0 || pos > bitLen)
 	{
-		return 0;
+		cerr<<"BitMap::Rank(int, int&) error parmater"<<endl;
+		exit(0);
 	}
 
 	if((pos+1)%block_size!=0)
@@ -310,6 +312,7 @@ void BitMap::Rank(int pos_left,int pos_right,int &rank_left,int &rank_right)
 		cerr<<"BitMap::Rank(int,int,int&,int&) error parmater"<<endl;
 		exit(0);
 	}
+
 	int block_anchor = (pos_left+1)/block_size;
 	if(block_anchor==(pos_right+1)/block_size)
 	{
