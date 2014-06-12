@@ -33,7 +33,7 @@ class ABS_FM
 		void Extracting(int pos,int len,char * &sequence);
 		int Load(loadkit & s);
 		int Save(savekit & s);
-		int BuildTree();
+		int BuildTree(int speedlevel=1);
 
 
 		int GetN(){return n;}

@@ -16,7 +16,7 @@ the Free Software Foundation; either version 2 or later of the License.
 
 WT_Handle::WT_Handle():fm(new ABS_FM()),u(){}
 
-WT_Handle::WT_Handle(const char * filename,int block_size,int D,int shape)
+WT_Handle::WT_Handle(const char * filename,int block_size,int D,int shape,int speedlevel)
 {
 	if(block_size<=0 || shape<0 || shape >2)
 	{
@@ -31,7 +31,7 @@ WT_Handle::WT_Handle(const char * filename,int block_size,int D,int shape)
 		case 2: fm =new Balance_FM(filename,block_size,D);break;
 		default: fm=new Hutacker_FM(filename,block_size,D);break;
 	}
-	fm->BuildTree();
+	fm->BuildTree(speedlevel);
 }
 
 WT_Handle::WT_Handle(const WT_Handle &h):fm(h.fm),u(h.u){}

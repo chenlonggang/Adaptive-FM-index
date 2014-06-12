@@ -479,7 +479,7 @@ int ABS_FM::BWT(unsigned char *T,int * SA,unsigned char * bwt,int len)
 }
 
 
-int ABS_FM::BuildTree()
+int ABS_FM::BuildTree(int speedlevel)
 {
 	int *SA = new int[n];
 	ds_ssort(T,SA,n);	
@@ -513,9 +513,24 @@ int ABS_FM::BuildTree()
 		if(bwt[i]!=bwt[i+1])
 			runs++;
 	runs=n/runs;
-	if(runs<4)
+	int a=0;
+	int b=0;
+	if(speedlevel<0 || speedlevel >2)
+	{
+		cerr<<"speedlevel error"<<endl;
+		exit(0);
+	}
+	switch(speedlevel)
+	{
+		case 0:a=2;b=10;break;
+		case 1:a=4;b=20;break;
+		case 2:a=10;b=50;break;
+		default:a=4;b=20;break;
+	}
+	
+	if(runs<a)
 		block_size=block_size*1;
-	else if(runs<20)
+	else if(runs<b)
 		block_size=block_size*2;
 	else
 		block_size=block_size*4;
