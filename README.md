@@ -63,7 +63,7 @@
 	```
 
 ##Results  
-![image](https://github.com/chenlonggang/Hybrid-FM-index/tree/master/pictures/bible.svg)
+![image](https://github.com/chenlonggang/Hybrid-FM-index/tree/master/pictures/book2.svg)
 ##ChangeLog
 2014.5.25:   
 Use the LookupTables,and cross them,it looks helpful,count works faster about 25~35%.  
