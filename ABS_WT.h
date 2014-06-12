@@ -25,7 +25,7 @@ class ABS_FM
 {
 	public:
 		//D:SA数组采样步长,Rank采样步长D*16
-		ABS_FM(const char * filename,int block_size=1024,int D=32);
+		ABS_FM(const char * filename,int block_size=256,int D=32);
 		ABS_FM(){};
 		virtual ~ABS_FM();
 		void Counting(const char * partten,int &num);
@@ -33,7 +33,7 @@ class ABS_FM
 		void Extracting(int pos,int len,char * &sequence);
 		int Load(loadkit & s);
 		int Save(savekit & s);
-		int BuildTree();
+		int BuildTree(int speedlevel=1);
 
 
 		int GetN(){return n;}

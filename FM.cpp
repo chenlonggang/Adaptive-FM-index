@@ -11,7 +11,7 @@ the Free Software Foundation; either version 2 or later of the License.
 =============================================*/
 #include"FM.h"
 
-FM::FM(const char *filename,int block_size,int D,int shape):wt(filename,block_size,D,shape){}
+FM::FM(const char *filename,int speedlevel,int D,int shape):wt(filename,256,D,shape,speedlevel){}
 
 FM::FM():wt(){}
 
