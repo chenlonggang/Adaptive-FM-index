@@ -43,7 +43,7 @@ int main(int argc,char ** argvs)
 		}
 
 		time_t t3 = clock();
-		FM fm(argvs[1],0);
+		FM fm(argvs[1]);
 		time_t t4 = clock();
 		cout<<argvs[1]<<endl;
 		cout<<"build time: "<<(t4-t3)/1000000.0<<endl;
@@ -102,8 +102,8 @@ int main(int argc,char ** argvs)
 			cout<<pp[i];
 */		
 
-/*		// for Save and Load
-		fm.Save("fm.index");
+		// for Save and Load
+/*		fm.Save("fm.index");
 		cout<<"Save is ok"<<endl;
 		FM fm1;
 		fm1.Load("fm.index");
@@ -119,8 +119,8 @@ int main(int argc,char ** argvs)
 			cout<<sa[i]<<endl;
 
 		fm1=fm;
-
 */
+
 		return 0;
 	}
 
