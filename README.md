@@ -1,4 +1,4 @@
-#Hybrid-FM-index
+#Adaptive-FM-index
 
 ##What is it?
 	 FM-index is a Succinct Data Structure(SDS), SDS can represent an object as implicitly,
