@@ -1,17 +1,18 @@
 #Hybrid-FM-index
 
 ##What is it?
-	 FM-index is a Succinct Data Structure(SDS), SDS can represent an object as implicitly,
-	 and in space close to information-theoretic lower bound of the object while 
-	 supporting operations of the original object efficiently.
-	 FM-index and CSA(compressed suffix array) both are implicit expression about SA(suffix array),
-	 has the ability of fast pattern matching,and needs little space, and Hybrid-FM-index is more
-	 space efficient, comparable with Bzip2,but CSA is a little weake in space.
-	 Hybrid-FM-index is a advanced version of the original FM-index,it's faster and smaller,
-	 as you can guess,we developed a set of compression methods,for each pieces of data,
-	 always select the best one,that's the bigest secret about my works.
-	 It works like a mixture of KMP and Bzip2,you can build a fm-index for a document,and the you 
-	 have mainly there operations in your hands:
+	 FM-index is a Succinct Data Structure(SDS),SDS can represent an object 
+	 as implicitly,and in space close to information-theoretic lower bound of 
+	 the object while supporting operations of the original object efficiently.
+	 FM-index and CSA(compressed suffix array) both are implicit expression 
+	 about SA(suffix array),has the ability of fast pattern matching,and needs 
+	 little space,and Adaptive-FM-index is more space efficient,comparable with 
+	 Bzip2,but CSA is a little weake in space.Adaptive-FM-index is a advanced 
+	 version of the original FM-index,it's faster and smaller,as you can guess,
+	 we developed a set of compression methods,for each pieces of data,always 
+	 select the best one,that's the bigest secret about my works.It works like 
+	 a mixture of KMP and Bzip2,you can build a fm-index for a document,and then
+	 you have mainly there operations in your hands:
 	 counting: count how many a pattern occurs in the document.
 	 locating: locate all the positions where the pattern occurs.
 	 extracting: decompress a piece of the document.
@@ -62,8 +63,6 @@
 	}
 	```
 
-##Results  
-![image](https://github.com/chenlonggang/Hybrid-FM-index/tree/master/pictures/class.png)
 ##ChangeLog
 2014.5.25:   
 Use the LookupTables,and cross them,it looks helpful,count works faster about 25~35%.  
@@ -101,13 +100,5 @@ are big,the decoding process is good enough,for example,if the block-size is 102
 form both points will not help too.So let it go,bye!
 	
 2014.6.6:  
-drawbacksearch function has the potential to works faster.Woking on it  
-
-2014.6.8:  
-speed up drawbacksearch works,count works about 25-35% faster for normal-data and random-data,  
-not sigificant for highly-repetive data.  
-
-2014.6.8:  
-Now working on clean and rearrange the code.and working on data-aware feature.
-
+drawbacksearch function has the potential to works faster.Woking on it
 
