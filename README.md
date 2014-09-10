@@ -56,7 +56,7 @@
 
 		fm.Save("index.fm");//serialize the fm object to file index.fm
 		FM fm2;
-		fm2->Load("index.fm");//restore the fm object from file index.fm
+		fm2.Load("index.fm");//restore the fm object from file index.fm
 
 		return 0;
 	}
