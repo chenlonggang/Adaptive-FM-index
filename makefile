@@ -1,10 +1,10 @@
 CC=g++
 CFLAGS=  -O3  -Wall -std=c++11
-my_fm:ds_ssortr main.o fm.a
+my_fm:div main.o fm.a
 	g++ main.o fm.a   -o my_fm
 
-fm.a:ABS_WT.o Balance_WT.o Huffman_WT.o Hutacker_WT.o FM.o BitMap.o UseCount.o WT_Handle.o InArray.o loadkit.o savekit.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/deep2.o ds_ssort/blind2.o
-	ar rc fm.a ABS_WT.o Balance_WT.o Huffman_WT.o Hutacker_WT.o FM.o BitMap.o UseCount.o WT_Handle.o  InArray.o loadkit.o savekit.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/deep2.o ds_ssort/blind2.o
+fm.a:ABS_WT.o Balance_WT.o Huffman_WT.o Hutacker_WT.o FM.o BitMap.o UseCount.o WT_Handle.o InArray.o loadkit.o savekit.o divsufsort.o sssort.o trsort.o utils.o
+	ar rc fm.a ABS_WT.o Balance_WT.o Huffman_WT.o Hutacker_WT.o FM.o BitMap.o UseCount.o WT_Handle.o  InArray.o loadkit.o savekit.o divsufsort.o sssort.o trsort.o utils.o
 
 %.o:%.cpp *.h
 	$(CC) -c  $(CFLAGS) $< -o $@
@@ -13,7 +13,7 @@ main.o:main.cpp  FM.h
 	g++ -c  main.cpp
 
 clean:
-	rm *.a  *.o ds_ssort/*.a ds_ssort/*.o ds_ssort/ds ds_ssort/bwt ds_ssort/unbwt ds_ssort/testlcp my_fm;
+	rm *.a  *.o  my_fm;
 
-ds_ssortr:
-	make -C ./ds_ssort/; cp ./ds_ssort/ds_ssort.a .
+div:
+	cp divsufsort/lib/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 

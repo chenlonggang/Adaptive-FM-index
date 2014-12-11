@@ -336,6 +336,27 @@ unsigned char ABS_FM::L(int i)
 	BitMap * r = root;
 	int bit =0;
 	int rank = 0;
+
+/*	//Bit(i)和Rank(i)可以在一步内计算出来，可以减少一次检索BitMap的功夫.
+	while(r->Left() || r->Right())
+	{
+		//bit = r->GetBit(data,i);
+		bit = r->Rank(i) - r->Rank(i-1);
+//		cout<<"L "<<bit<<endl;
+		if(bit ==1)
+		{
+			i = r->Rank(i)-1;
+			r=r->Right();
+		}
+		else
+		{
+			i = (i+1) - r->Rank(i)-1;
+			r=r->Left();
+		}
+	}
+	return r->Label();
+*/
+
 	
 	while(r->Left())
 	{
@@ -488,7 +509,7 @@ int ABS_FM::BuildTree(int speedlevel)
 		if(bwt[i]!=bwt[i+1])
 			runs++;
 	runs=n/runs;
-//	cout<<runs<<endl;
+	cout<<runs<<endl;
 	int a=0;
 	int b=0;
 	if(speedlevel<0 || speedlevel >2)
@@ -511,7 +532,7 @@ int ABS_FM::BuildTree(int speedlevel)
 	else
 		block_size=block_size*4;
 	
-//	cout<<"block_size: "<<block_size<<endl;
+	cout<<"block_size: "<<block_size<<endl;
 	TreeCode();
 	root=CreateWaveletTree(bwt,n);
 //	cout<<"CreatWaveletTree"<<endl;
@@ -803,6 +824,9 @@ int ABS_FM::LoadWTTree(loadkit &s,uchar **tables)
 		r->Load(s);
 		pmap[p[i]] = r;
 	}
+
+//	cout<<"748"<<endl;
+
 	//挂链
 	map<int ,BitMap *>::iterator iter;
 	map<int ,BitMap *>::iterator f_iter;

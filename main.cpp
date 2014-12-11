@@ -45,7 +45,7 @@ int main(int argc,char ** argvs)
 		time_t t3 = clock();
 		FM fm(argvs[1]);
 		time_t t4 = clock();
-		cout<<argvs[1]<<endl;
+	//	cout<<argvs[1]<<endl;
 		cout<<"build time: "<<(t4-t3)/1000000.0<<endl;
 		//cout<<"fm is ready"<<endl;
 		int n =fm.GetN();
@@ -69,14 +69,14 @@ int main(int argc,char ** argvs)
 		for(int i=0;i<times;i++)
 		{
 			fm.Counting(p[i],num);
-			totnum = totnum + num;
+	//		totnum = totnum + num;
 		}
 
 		gettimeofday(&end,NULL);
 		//time_t t2 =clock();
 		///cout<<"count-time: "<<(t2-t1)/1000000.0<<endl;
 		cout<<"count-time: "<<((end.tv_sec-start.tv_sec)*1000000.0+end.tv_usec - start.tv_usec)/times<<endl;
-		cout<<"avera-nums: "<<totnum/times<<endl;
+	//	cout<<"avera-nums: "<<totnum/times<<endl;
 	
 
 /*

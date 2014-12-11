@@ -20,7 +20,7 @@ the Free Software Foundation; either version 2 or later of the License.
 #include"InArray.h"
 #include"loadkit.h"
 #include"savekit.h"
-#include"ds_ssort.h"
+#include"divsufsort.h"
 class ABS_FM
 {
 	public:
