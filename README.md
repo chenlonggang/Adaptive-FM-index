@@ -1,4 +1,4 @@
-#Hybrid-FM-index
+#Adaptive-FM-index
 
 ##What is it?
 	 FM-index is a Succinct Data Structure(SDS),SDS can represent an object 
@@ -57,12 +57,13 @@
 
 		fm.Save("index.fm");//serialize the fm object to file index.fm
 		FM fm2;
-		fm2->Load("index.fm");//restore the fm object from file index.fm
+		fm2.Load("index.fm");//restore the fm object from file index.fm
 
 		return 0;
 	}
 	```
-
+##Structure
+![click here to get a quick look at the structure](https://github.com/chenlonggang/Hybrid-FM-index/tree/master/pictures/class.png)
 ##ChangeLog
 2014.5.25:   
 Use the LookupTables,and cross them,it looks helpful,count works faster about 25~35%.  
