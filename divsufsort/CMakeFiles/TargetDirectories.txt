@@ -1,0 +1,8 @@
+/home/chen/Desktop/libdivsufsort-2.0.1/examples/CMakeFiles/bwt.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/lib/CMakeFiles/divsufsort.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/lib/CMakeFiles/divsufsort64.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/examples/CMakeFiles/mksary.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/examples/CMakeFiles/sasearch.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/examples/CMakeFiles/suftest.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/examples/CMakeFiles/unbwt.dir
+/home/chen/Desktop/libdivsufsort-2.0.1/CMakeFiles/uninstall.dir

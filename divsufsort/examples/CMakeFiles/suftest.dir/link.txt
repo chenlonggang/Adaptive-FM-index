@@ -1,0 +1,1 @@
+/usr/bin/gcc   -Wall -O3 -DNDEBUG -fomit-frame-pointer    CMakeFiles/suftest.dir/suftest.o  -o suftest -rdynamic -L/home/chen/Desktop/libdivsufsort-2.0.1/examples/../lib ../lib/libdivsufsort.a -Wl,-rpath,/home/chen/Desktop/libdivsufsort-2.0.1/examples/../lib 
