@@ -13,7 +13,7 @@ main.o:main.cpp  FM.h
 	g++ -c  main.cpp
 
 clean:
-	rm *.a  *.o  my_fm;
+	rm *.a  *.o  my_fm ./divsufsort/*.a ./divsufsort/*.o
 
 div:
-	cp divsufsort/lib/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 
+	make -C ./divsufsort/; cp divsufsort/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 
