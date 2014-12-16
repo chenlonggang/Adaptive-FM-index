@@ -38,8 +38,7 @@
 		int num;
 		fm.Counting("the",num);
 		cout<<"pattern the occs "<<num<<" times"<<endl;
-		int *pos;
-		fm.Locating("love",num,pos);
+		int * pos=fm.Locating("love",num);
 		cout<<"pattern love occs "<<num<<" times"<<endl;
 		cout<<"all the positions are:";
 		for(int i=0;i<num;i++)
@@ -47,10 +46,9 @@
 		delete [] pos;//it's your duty to delete pos.
 		pos=NULL;
 
-		char * sequence;
 		int start=0;
 		int len =20;
-		fm.Extracting(start,len,sequence);
+		unsigned char *sequence =fm.Extracting(start,len);
 		cout<<"T[start...start+len-1] is "<<sequence<<endl;
 		delete [] sequence;//it's your duty to delete sequence.
     	sequence =NULL;
