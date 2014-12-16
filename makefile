@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=  -O3  -Wall -std=c++11
+CFLAGS=  -O3  -Wall
 my_fm:div main.o fm.a
 	g++ main.o fm.a   -o my_fm
 

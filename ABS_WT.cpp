@@ -171,7 +171,7 @@ int * ABS_FM::Locating(const char * pattern,int &num)
 		return NULL;
 	num = Right - Left + 1;
 	int *pos =new int[num];
-	for(int i=0;i<num && i<10;i++)
+	for(int i=0;i<num;i++)
 		pos[i]=Lookup(Left + i);
 	return pos;
 }
