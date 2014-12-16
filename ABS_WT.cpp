@@ -162,45 +162,40 @@ void ABS_FM::Counting(const char * pattern,int & num)
 }
 
 
-void ABS_FM::Locating(const char * pattern,int &num,int *& pos)
+int * ABS_FM::Locating(const char * pattern,int &num)
 {
 	int Left=1;
 	int Right = 0;
 	DrawBackSearch(pattern,Left,Right);
 	if(Right < Left)
-	{	pos=NULL;
-		return ;
-	}
-	else
-	{
-		num = Right - Left + 1;
-		pos =new int[num];
-		for(int i=0;i<num && i<10;i++)
-		{
-			pos[i]=Lookup(Left + i);
-		}
-	}
+		return NULL;
+	num = Right - Left + 1;
+	int *pos =new int[num];
+	for(int i=0;i<num && i<10;i++)
+		pos[i]=Lookup(Left + i);
+	return pos;
 }
 
 
-void ABS_FM::Extracting(int pos,int len,char * &sequence)
+unsigned char* ABS_FM::Extracting(int pos,int len)
 {
 	if(pos + len > n-1 || pos <0)
 	{
 		cout<<pos<<"  "<<len<<endl;
 		cout<<pos+len<<" "<<n-1<<" "<<pos<<endl;
 		cout<<"ABS_FM::Extracting  error parmaters"<<endl;
-		exit(0);
+		return NULL;
 	}
+
+	unsigned char * sequence=new unsigned char[len+1];
+	sequence[len]='\0';
 	int end = pos + len -1;
 	int anchor = 0;
 	int overloop = 0;
-
 	int step = this->D*16;
-
 	overloop = (n-2-end)%step;
 	anchor = (n-2-end)/step;
-	
+
 	int i= RankL->GetValue(anchor);
 	for(int j=0;j<overloop;j++)
 		i = LF(i);
@@ -208,9 +203,9 @@ void ABS_FM::Extracting(int pos,int len,char * &sequence)
 	for(int j=0;j<len;j++)
 	{
 		sequence[len-1-j]=L(i);
-	//	cout<<L(i);
 		i = LF(i);
 	}
+	return sequence;
 }
 
 

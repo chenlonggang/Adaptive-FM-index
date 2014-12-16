@@ -63,14 +63,14 @@ void FM::Counting(const char * pattern,int &num)
 }
 
 
-void FM::Locating(const char * pattern,int & num,int * & pos)
+int * FM::Locating(const char * pattern,int & num)
 {
-	wt.Locating(pattern,num,pos);
+	return wt.Locating(pattern,num);
 }
 
 
-void FM::Extracting(int pos,int len,char *sequence)
+unsigned char * FM::Extracting(int pos,int len)
 {
-	wt.Extracting(pos,len,sequence);
+	return wt.Extracting(pos,len);
 }
 

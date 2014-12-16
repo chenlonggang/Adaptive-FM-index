@@ -29,8 +29,8 @@ class WT_Handle
 		~WT_Handle();
 		
 		void Counting(const char * pattern,int &num) { fm->Counting(pattern,num); };
-		void Locating(const char * pattern,int &num,int * &pos){ fm->Locating(pattern,num,pos); };
-		void Extracting(int pos,int len,char * &sequence){ fm->Extracting(pos,len,sequence);};
+		int * Locating(const char * pattern,int &num){ return fm->Locating(pattern,num); };
+		unsigned char *Extracting(int pos,int len){ return fm->Extracting(pos,len);};
 		int Load(loadkit & s) { return fm->Load(s);};
 		int Save(savekit & s){ return fm->Save(s);};
 

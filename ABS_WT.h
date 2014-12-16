@@ -29,8 +29,8 @@ class ABS_FM
 		ABS_FM(){};
 		virtual ~ABS_FM();
 		void Counting(const char * partten,int &num);
-		void Locating(const char * pattern,int &num,int * &pos);
-		void Extracting(int pos,int len,char * &sequence);
+		int * Locating(const char * pattern,int &num);
+		unsigned char* Extracting(int pos,int len);
 		int Load(loadkit & s);
 		int Save(savekit & s);
 		int BuildTree(int speedlevel=1);
