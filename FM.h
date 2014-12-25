@@ -49,15 +49,15 @@ class FM
 		FM(const FM & h):wt(h.wt){}
 		FM& operator =(const FM&h){wt=h.wt;return *this;};
 		
-		void Counting(const char *pattern,int &num);
-		int * Locating(const char *pattern,int & num);
-		unsigned char * Extracting(int pos,int len);
-		int Load(const char * indexfile);
-		int Save(const char * indexfile);
+		void counting(const char *pattern,int &num);
+		int * locating(const char *pattern,int & num);
+		unsigned char * extracting(int pos,int len);
+		int load(const char * indexfile);
+		int save(const char * indexfile);
 
-		int GetN();
-		int SizeInByte();
-		int SizeInByte_count();
+		int getN();
+		int sizeInByte();
+		int sizeInByte_count();
 	private:
 		WT_Handle wt;
 };

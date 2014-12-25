@@ -15,22 +15,22 @@ FM::FM(const char *filename,int speedlevel):wt(filename,256,32,1,speedlevel){}
 
 FM::FM():wt(){}
 
-int FM::GetN()
+int FM::getN()
 {
 	return wt.GetN()-1;
 }
 
-int FM::SizeInByte()
+int FM::sizeInByte()
 {
 	return wt.SizeInByte();
 }
 
-int FM::SizeInByte_count()
+int FM::sizeInByte_count()
 {
 	return wt.SizeInByte_count();
 }
 
-int FM::Save(const char * indexfile)
+int FM::save(const char * indexfile)
 {
 	savekit s(indexfile);
 	s.writeu64(198809102510);
@@ -40,7 +40,7 @@ int FM::Save(const char * indexfile)
 }
 
 
-int FM::Load(const char * indexfile)
+int FM::load(const char * indexfile)
 {
 	loadkit s(indexfile);
 	unsigned long long int magicnum=0;
@@ -57,19 +57,19 @@ int FM::Load(const char * indexfile)
 }
 
 
-void FM::Counting(const char * pattern,int &num)
+void FM::counting(const char * pattern,int &num)
 {
 	wt.Counting(pattern,num);
 }
 
 
-int * FM::Locating(const char * pattern,int & num)
+int * FM::locating(const char * pattern,int & num)
 {
 	return wt.Locating(pattern,num);
 }
 
 
-unsigned char * FM::Extracting(int pos,int len)
+unsigned char * FM::extracting(int pos,int len)
 {
 	return wt.Extracting(pos,len);
 }
