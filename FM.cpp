@@ -25,9 +25,17 @@ int FM::sizeInByte()
 	return wt.SizeInByte();
 }
 
-int FM::sizeInByte_count()
+int FM::sizeInByteForCount()
 {
 	return wt.SizeInByte_count();
+}
+
+double FM::compressRatioForCount(){
+	return sizeInByteForCount()/(getN()*1.0);
+}
+
+double FM::compressRatio(){
+	return sizeInByte()/(getN()*1.0);
 }
 
 int FM::save(const char * indexfile)

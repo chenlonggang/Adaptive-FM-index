@@ -52,12 +52,15 @@ class FM
 		void counting(const char *pattern,int &num);
 		int * locating(const char *pattern,int & num);
 		unsigned char * extracting(int pos,int len);
+		
 		int load(const char * indexfile);
 		int save(const char * indexfile);
 
 		int getN();
 		int sizeInByte();
-		int sizeInByte_count();
+		int sizeInByteForCount();
+		double compressRatio();
+		double compressRatioForCount();
 	private:
 		WT_Handle wt;
 };

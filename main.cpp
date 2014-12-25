@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 		else if(result[0]=="size")
 		{
 			if(csa!=NULL)
-				cout<<csa->sizeInByte_count()/(csa->getN()*1.0)<<endl;
+				cout<<csa->compressRatioForCount()<<endl;
 			else
 				cout<<"build a FM first"<<endl;
 		}
