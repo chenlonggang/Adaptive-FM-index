@@ -57,6 +57,7 @@ class FM
 		int save(const char * indexfile);
 
 		int getN();
+		int getAlphabetSize();
 		int sizeInByte();
 		int sizeInByteForCount();
 		double compressRatio();

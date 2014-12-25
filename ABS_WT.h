@@ -35,7 +35,7 @@ class ABS_FM
 		int Save(savekit & s);
 		int BuildTree(int speedlevel=1);
 
-
+		int GetAlphabetsize(){return alphabetsize;}
 		int GetN(){return n;}
 		int SizeInByte();
 		int SizeInByte_count();

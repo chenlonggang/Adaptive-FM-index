@@ -15,9 +15,12 @@ FM::FM(const char *filename,int speedlevel):wt(filename,256,32,1,speedlevel){}
 
 FM::FM():wt(){}
 
-int FM::getN()
-{
+int FM::getN(){
 	return wt.GetN()-1;
+}
+
+int FM::getAlphabetSize(){
+	return wt.GetAlphabetsize();
 }
 
 int FM::sizeInByte()

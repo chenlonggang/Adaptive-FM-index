@@ -35,6 +35,7 @@ class WT_Handle
 		int Save(savekit & s){ return fm->Save(s);};
 
 		int GetN(){ return fm->GetN();}
+		int GetAlphabetsize(){return fm->GetAlphabetsize();}
 		int SizeInByte(){ return fm->SizeInByte();};
 		int SizeInByte_count() { return fm->SizeInByte_count();};
 };
